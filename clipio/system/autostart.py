@@ -70,7 +70,8 @@ X-GNOME-Autostart-enabled=true
 def set_enabled(on: bool) -> None:
     if sys.platform == "win32":
         import winreg
-        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, RUN_KEY, 0, winreg.KEY_SET_VALUE) as key:
+        # CreateKeyEx also opens the key when it exists; fresh Windows installs may not have it
+        with winreg.CreateKeyEx(winreg.HKEY_CURRENT_USER, RUN_KEY, 0, winreg.KEY_SET_VALUE) as key:
             if on:
                 value = " ".join(f'"{a}"' if " " in a else a for a in command())
                 winreg.SetValueEx(key, "Clipio", 0, winreg.REG_SZ, value)
