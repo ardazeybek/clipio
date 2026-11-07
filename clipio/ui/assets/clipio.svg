@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="22 14 218 218">
+  <!-- back sheet: sage note -->
+  <g transform="rotate(-9 128 140)">
+    <rect x="62" y="64" width="128" height="148" rx="18" fill="#9CC3A6"/>
+  </g>
+  <!-- front note sheet with its paper stack -->
+  <g transform="rotate(5 128 140)">
+    <rect x="72" y="70" width="128" height="148" rx="18" fill="#E9DFCB"/>
+    <rect x="66" y="64" width="128" height="148" rx="18" fill="#FFFCF5" stroke="#E4D8C2" stroke-width="3"/>
+    <rect x="88" y="112" width="84" height="9" rx="4.5" fill="#E4D8C2"/>
+    <rect x="88" y="136" width="84" height="9" rx="4.5" fill="#E4D8C2"/>
+    <rect x="88" y="160" width="50" height="9" rx="4.5" fill="#E4D8C2"/>
+  </g>
+  <!-- peach paper clip -->
+  <path d="M168 32 v62 a16 16 0 0 1 -32 0 v-52 a10 10 0 0 1 20 0 v46" fill="none" stroke="#E58F6F" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- mustard tape -->
+  <rect x="70" y="50" width="52" height="20" rx="3" transform="rotate(-18 96 60)" fill="#F3D9A4" opacity="0.92"/>
+</svg>

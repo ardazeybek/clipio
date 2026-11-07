@@ -1,4 +1,4 @@
 # docs/
-GitHub sayfası için belgeler ve görseller.
+Documentation and images for the GitHub page.
 
-- `assets/overview.png` — README'deki panel ekran görüntüsü (örnek verilerle)
+- `assets/overview.png` — panel screenshot used in the README (sample data)

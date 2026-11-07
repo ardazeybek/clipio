@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clipio"
+version = "0.2.0"
+description = "A paper-themed clipboard history for Windows, macOS and Linux."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Arda Zeybek" }]
+requires-python = ">=3.10"
+dependencies = [
+    # PySide6 6.12.0 crashes on Python < 3.12 (it over-releases None)
+    "PySide6-Essentials>=6.9,<6.12; python_version < '3.12'",
+    "PySide6-Essentials>=6.9; python_version >= '3.12'",
+    "tomli>=2.0; python_version < '3.11'",
+    "pynput>=1.7; sys_platform == 'darwin'",
+    "python-xlib>=0.33; sys_platform == 'linux'",
+]
+keywords = ["clipboard", "clipboard-manager", "clipboard-history", "qt", "pyside6"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Win32 (MS Windows)",
+    "Environment :: MacOS X",
+    "Environment :: X11 Applications :: Qt",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Topic :: Desktop Environment",
+    "Topic :: Utilities",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[project.urls]
+Homepage = "https://github.com/ardazeybek/clipio"
+Issues = "https://github.com/ardazeybek/clipio/issues"
+
+[project.scripts]
+clipio = "clipio.cli:main"
+
+[project.gui-scripts]
+clipio-gui = "clipio.cli:gui_main"
+
+[tool.setuptools.packages.find]
+include = ["clipio*"]
+
+[tool.setuptools.package-data]
+clipio = ["ui/*.qml", "ui/components/*.qml", "ui/components/qmldir", "ui/icons/*.svg", "ui/assets/*.svg"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
