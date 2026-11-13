@@ -29,6 +29,12 @@ def config_dir() -> Path:
 
 
 # Database file
+# Lock that keeps a second Clipio from starting
+def lock_file() -> Path:
+    return data_dir() / "clipio.lock"
+
+
+# Database file
 def db_file() -> Path:
     return data_dir() / "clipio.db"
 

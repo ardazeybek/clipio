@@ -8,10 +8,11 @@ from . import __version__
 
 USAGE = """usage: clipio <command>
 
-  run               run Clipio in this terminal (stops with Ctrl+C)
+  run               run the Clipio service in this terminal (stops with Ctrl+C)
   start             start Clipio in the background
   stop              quit the running Clipio
   toggle|show|hide  open or close the panel
+  next              paste the next item of the paste queue (bind it to a key)
   paste <id>        paste an item into the active window
   copy <id>         put an item on the clipboard
   pin <id>          pin or unpin an item
@@ -26,7 +27,7 @@ USAGE = """usage: clipio <command>
   version           print the version
 """
 
-UI_COMMANDS = {"toggle", "show", "hide"}
+UI_COMMANDS = {"toggle", "show", "hide", "next"}
 ID_COMMANDS = {"pin", "delete"}
 
 
@@ -76,6 +77,7 @@ def status(con) -> None:
     from .core import config, paths
     print(json.dumps({
         "running": ipc.is_running(),
+        "panel_loaded": ipc.is_running(ipc.PANEL),
         "items": con.execute("SELECT COUNT(*) FROM items").fetchone()[0],
         "paused": paths.pause_file().exists(),
         "retention_days": config.load()["retention_days"],
@@ -152,6 +154,9 @@ def main(argv: list[str] | None = None) -> int:
     if cmd == "run":
         from .app import run
         return run([sys.argv[0]])
+    if cmd == "panel":   # started by the service when the panel opens
+        from .panel import run as run_panel
+        return run_panel([sys.argv[0]])
     if cmd == "start":
         return 0 if ensure_running() else 1
     if cmd == "stop":

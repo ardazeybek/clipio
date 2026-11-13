@@ -3,7 +3,7 @@ import hashlib
 import struct
 from dataclasses import dataclass, field
 
-from . import classify, db, paths
+from . import classify, clean, db, paths, sensitive
 
 MIME_EXT = {"image/png": "png", "image/jpeg": "jpg", "image/webp": "webp",
             "image/gif": "gif", "image/bmp": "bmp", "image/avif": "avif"}
@@ -11,6 +11,16 @@ MIME_EXT = {"image/png": "png", "image/jpeg": "jpg", "image/webp": "webp",
 # Markers that password managers put on secret copies (Linux, macOS, Windows)
 SECRET_MARKERS = ("x-kde-passwordManagerHint", "org.nspasteboard.ConcealedType",
                   "ExcludeClipboardContentFromMonitorProcessing")
+
+# Password managers whose copies are never saved (window class or process name, lower case)
+PASSWORD_MANAGERS = {
+    "keepassxc", "org.keepassxc.keepassxc", "keepassxc.exe", "keepass", "keepass.exe",
+    "1password", "1password.exe", "bitwarden", "bitwarden.exe", "com.bitwarden.desktop",
+    "enpass", "enpass.exe", "proton pass", "proton-pass", "me.proton.pass", "keeper",
+    "dashlane", "lastpass", "nordpass", "seahorse", "org.gnome.seahorse.application",
+    "kwalletmanager5", "org.kde.kwalletmanager5", "org.kde.kwalletmanager", "gnome-secrets",
+    "org.gnome.world.secrets", "passwords", "keychain access", "com.apple.keychainaccess",
+}
 
 
 @dataclass
@@ -46,9 +56,13 @@ def _store_text(con, raw: bytes, source: str, cfg: dict) -> int | None:
     if not text.strip():
         return None
     hint, meta = classify.classify(text)
+    # a copied link loses its tracking parameters
+    if hint == "url" and cfg["clean_links"]:
+        text = clean.clean_url(text.strip())
+        raw = text.encode()
     digest = hashlib.sha256(raw).hexdigest()
     return db.upsert(con, kind="text", hash=digest, text=text, hint=hint, meta=meta,
-                     size=len(raw), source=source)
+                     size=len(raw), source=source, secret=int(cfg["detect_secrets"] and sensitive.is_sensitive(text)))
 
 
 # Write an image to disk and save it
@@ -66,11 +80,11 @@ def _store_image(con, raw: bytes, mime: str, source: str, cfg: dict) -> int | No
                      width=w, height=h, size=len(raw), source=source)
 
 
-# True when this copy must not be saved (paused, secret or from an ignored app)
+# True when this copy must not be saved (paused, secret, from a password manager or an ignored app)
 def should_skip(snap: Snapshot, source: str, cfg: dict) -> bool:
     if paths.pause_file().exists() or is_secret(snap.formats):
         return True
-    ignored = {a.lower() for a in cfg["ignore_apps"]}
+    ignored = {a.lower() for a in cfg["ignore_apps"]} | PASSWORD_MANAGERS
     return bool(source) and source.lower() in ignored
 
 

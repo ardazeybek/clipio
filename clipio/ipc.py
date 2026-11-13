@@ -1,4 +1,5 @@
-"""Single-instance channel: the running app listens on a local socket, `clipio` commands talk to it."""
+"""Local socket channels: `clipio` commands and the panel talk to the background service,
+and the service talks to the panel process. role "" is the service, role "panel" the panel."""
 import getpass
 import os
 import re
@@ -6,22 +7,27 @@ import re
 from PySide6.QtCore import QObject
 from PySide6.QtNetwork import QLocalServer, QLocalSocket
 
+PANEL = "panel"
+_pending: set = set()   # sockets of fire-and-forget messages still on their way
 
-# Socket name for this user (a named pipe on Windows, a socket file elsewhere)
-def server_name() -> str:
+
+# Socket name for this user and role (a named pipe on Windows, a socket file elsewhere)
+def server_name(role: str = "") -> str:
     if override := os.environ.get("CLIPIO_IPC_NAME"):
-        return override
-    try:
-        user = getpass.getuser()
-    except Exception:
-        user = "user"
-    return "clipio-" + re.sub(r"[^A-Za-z0-9_-]", "_", user)
+        base = override
+    else:
+        try:
+            user = getpass.getuser()
+        except Exception:
+            user = "user"
+        base = "clipio-" + re.sub(r"[^A-Za-z0-9_-]", "_", user)
+    return f"{base}-{role}" if role else base
 
 
-# Send one command to the running app and return its reply (None when it is not running)
-def send(command: str, timeout_ms: int = 2000) -> str | None:
+# Send one command and wait for its reply (None when nobody listens)
+def send(command: str, timeout_ms: int = 2000, role: str = "") -> str | None:
     sock = QLocalSocket()
-    sock.connectToServer(server_name())
+    sock.connectToServer(server_name(role))
     if not sock.waitForConnected(timeout_ms):
         return None
     sock.write((command.strip() + "\n").encode("utf-8"))
@@ -37,9 +43,42 @@ def send(command: str, timeout_ms: int = 2000) -> str | None:
     return reply.decode("utf-8", errors="replace").strip()
 
 
-# True when a Clipio app is already running for this user
-def is_running() -> bool:
-    return send("ping", 500) == "pong"
+# True when the Clipio service (or, with role "panel", the panel) is running for this user
+def is_running(role: str = "") -> bool:
+    return send("ping", 500, role) == "pong"
+
+
+# Send a command without waiting (needs a running Qt event loop); on_fail runs when nobody listens
+def post(command: str, role: str = "", on_fail=None) -> None:
+    sock = QLocalSocket()
+    _pending.add(sock)
+    sent = []   # set once connected: later errors (the other side hanging up) are not failures
+
+    # Write the line once connected, then hang up
+    def connected():
+        sent.append(True)
+        sock.write((command.strip() + "\n").encode("utf-8"))
+        sock.flush()
+        sock.disconnectFromServer()
+
+    # Nobody listens
+    def failed(_err):
+        if sent or sock not in _pending:
+            return
+        finish()
+        if on_fail:
+            on_fail()
+
+    # Forget the socket
+    def finish():
+        if sock in _pending:
+            _pending.discard(sock)
+            sock.deleteLater()
+
+    sock.connected.connect(connected)
+    sock.errorOccurred.connect(failed)
+    sock.disconnected.connect(finish)
+    sock.connectToServer(server_name(role))
 
 
 class _Connection(QObject):
@@ -63,12 +102,16 @@ class _Connection(QObject):
             return
         self._answered = True
         line = self._buf.split(b"\n", 1)[0].decode("utf-8", errors="replace").strip()
-        self._sock.write((str(self._handler(line)) + "\n").encode("utf-8"))
-        self._sock.flush()
-        self._sock.disconnectFromServer()
+        reply = str(self._handler(line))
+        if self._sock.state() == QLocalSocket.LocalSocketState.ConnectedState:   # a fire-and-forget sender may be gone
+            self._sock.write((reply + "\n").encode("utf-8"))
+            self._sock.flush()
+            self._sock.disconnectFromServer()
 
-    # Free the socket and this helper once the client is gone
+    # Answer a line that came with the hang-up (fire-and-forget senders), then free the socket
     def _done(self) -> None:
+        if not self._answered:
+            self._read()
         self._sock.deleteLater()
         self.deleteLater()
 
@@ -76,15 +119,16 @@ class _Connection(QObject):
 class Server(QObject):
     """Receives one-line commands; `handler(command) -> reply` runs on the main thread."""
 
-    def __init__(self, handler, parent=None):
+    def __init__(self, handler, parent=None, role: str = ""):
         super().__init__(parent)
         self._handler = handler
+        self._role = role
         self._server = QLocalServer(self)
         self._server.newConnection.connect(self._accept)
 
     # Start listening; remove a stale socket left by a crashed instance first
     def listen(self) -> bool:
-        name = server_name()
+        name = server_name(self._role)
         if self._server.listen(name):
             return True
         QLocalServer.removeServer(name)

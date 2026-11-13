@@ -62,11 +62,40 @@ def seed(con):
     ingest.capture(con, Snapshot(formats=["image/png"], image=make_png()), "viewer", cfg)
 
 
+class StubPanelLink:
+    """Service-side panel link that drives the in-process panel directly (no second process)."""
+
+    def __init__(self):
+        self.panel = None
+        self.shown = False
+        self.running = True
+
+    def show(self):
+        self.panel.show()
+
+    def hide(self):
+        self.panel.hide()
+
+    def toggle(self):
+        self.panel.toggle()
+
+    def refresh(self):
+        self.panel.refresh()
+
+    def quit(self):
+        pass
+
+    def report(self, state):
+        self.shown = state == "shown"
+        return "ok"
+
+
 @pytest.fixture(scope="session")
 def ui(qapp, tmp_path_factory):
-    """One controller and one QML engine for the whole session (Qt allows only one
-    engine to use the Backend singleton)."""
+    """One service controller and one panel (one QML engine) for the whole session
+    (Qt allows only one engine to use the Backend singleton)."""
     from clipio.app import Controller
+    from clipio.panel import PanelController
     base = tmp_path_factory.mktemp("ui")
     mp = pytest.MonkeyPatch()
     mp.setenv("CLIPIO_DATA_DIR", str(base / "data"))
@@ -81,75 +110,117 @@ def ui(qapp, tmp_path_factory):
             warnings.append(msg)
 
     previous = qInstallMessageHandler(handler)
-    ctl = Controller(qapp, StubClipboard())
-    assert ctl.load_ui(), warnings
-    yield ctl, warnings, base
-    ctl.window.hide()
+    link = StubPanelLink()
+    svc = Controller(qapp, StubClipboard(), panel=link)
+    panel = PanelController(qapp, service=svc.handle_command)
+    panel.quit = lambda: None          # the test app must keep running
+    link.panel = panel
+    assert panel.load_ui(), warnings
+    yield svc, panel, warnings, base
+    panel.window.hide()
     qInstallMessageHandler(previous)
     mp.undo()
 
 
 @pytest.fixture
 def controller(ui, monkeypatch):
-    ctl, warnings, base = ui
+    svc, panel, warnings, base = ui
     # use the session folders the controller's database lives in, not the per-test ones
     monkeypatch.setenv("CLIPIO_DATA_DIR", str(base / "data"))
     monkeypatch.setenv("CLIPIO_CONFIG_DIR", str(base / "config"))
-    ctl.con.execute("DELETE FROM items")
-    ctl.con.commit()
-    seed(ctl.con)
-    ctl.refresh()
+    svc.con.execute("DELETE FROM items")
+    svc.con.commit()
+    seed(svc.con)
+    svc.queue = []
+    panel.refresh()
     warnings.clear()
-    yield ctl, warnings
-    ctl.hide()
+    yield svc, panel, warnings
+    panel.hide()
 
 
 def test_panel_loads_and_lists_items(qapp, controller):
-    ctl, warnings = controller
-    ctl.show()
+    svc, panel, warnings = controller
+    svc.show()
     pump(qapp, 700)
-    assert ctl.window.isVisible()
-    assert ctl.bridge.shown
+    assert panel.window.isVisible()
+    assert panel.bridge.shown
+    assert svc.panel.shown            # the panel told the service it is open
+    assert len(__import__("json").loads(panel.bridge.stateJson)["items"]) == 6
     assert not warnings, warnings
 
 
 def test_new_clipboard_content_is_saved(qapp, controller):
-    ctl, warnings = controller
-    ctl.clipboard.snap = Snapshot(formats=["text/plain"], text=b"fresh copy")
-    ctl.on_clipboard_changed()
-    rows = db.list_items(ctl.con)
+    svc, panel, warnings = controller
+    svc.clipboard.snap = Snapshot(formats=["text/plain"], text=b"fresh copy")
+    svc.on_clipboard_changed()
+    rows = db.list_items(svc.con)
     assert any(r["text"] == "fresh copy" for r in rows)
+    assert "fresh copy" in panel.bridge.stateJson   # the open panel was refreshed
     assert not warnings, warnings
 
 
 def test_actions_from_the_panel(qapp, controller):
-    ctl, warnings = controller
-    ctl.show()
+    svc, panel, warnings = controller
+    svc.show()
     pump(qapp, 300)
-    first = db.list_items(ctl.con)[0]["id"]
-    ctl.bridge.togglePin(first)
-    assert db.get(ctl.con, first)["pinned"] == 1
-    ctl.bridge.setRetention(7)
+    first = db.list_items(svc.con)[0]["id"]
+    panel.bridge.togglePin(first)
+    assert db.get(svc.con, first)["pinned"] == 1
+    panel.bridge.setRetention(7)
     assert config.load()["retention_days"] == 7
-    ctl.bridge.setPaused(True)
-    ctl.bridge.setPaused(False)
-    ctl.bridge.activate(first, False)        # copy only
+    panel.bridge.setPaused(True)
+    panel.bridge.setPaused(False)
+    panel.bridge.activate(first, False)        # copy only: goes through the service
     pump(qapp, 300)
-    assert not ctl.clipboard.snap.is_empty()
-    assert not ctl.bridge.shown
-    ctl.bridge.clearAll()
-    assert all(r["pinned"] for r in db.list_items(ctl.con))
+    assert not svc.clipboard.snap.is_empty()
+    assert not panel.bridge.shown
+    assert not svc.panel.shown
+    panel.bridge.clearAll()
+    assert all(r["pinned"] for r in db.list_items(svc.con))
     pump(qapp, 300)
     assert not warnings, warnings
 
 
-def test_ipc_commands(qapp, controller):
-    ctl, _ = controller
-    assert ctl.handle_command("ping") == "pong"
-    assert ctl.handle_command("toggle") == "ok"
+def test_paste_queue_lives_in_the_service(qapp, controller):
+    svc, panel, warnings = controller
+    ids = [r["id"] for r in db.list_items(svc.con)][:3]
+    svc.show()
     pump(qapp, 300)
-    assert ctl.bridge.shown
-    assert ctl.handle_command("hide") == "ok"
+    panel.bridge.startQueue(ids)
+    pump(qapp, 100)
+    assert svc.queue == ids[1:]
+    panel.refresh()
+    assert panel.queue == ids[1:]
+    panel.bridge.clearQueue()
+    assert svc.queue == [] and panel.queue == []
+    assert not warnings, warnings
+
+
+def test_panel_quits_after_idle(qapp, controller, monkeypatch):
+    svc, panel, warnings = controller
+    quits = []
+    monkeypatch.setattr(panel, "quit", lambda: quits.append(1))
+    config.set_int("panel_keep_minutes", 0)
+    svc.show()
+    pump(qapp, 300)
+    panel.hide()
+    pump(qapp, 700)
+    assert quits == [1]
+    svc.show()           # showing again stops the countdown
+    pump(qapp, 300)
+    assert panel.bridge.shown
+    assert not warnings, warnings
+
+
+def test_ipc_commands(qapp, controller):
+    svc, panel, _ = controller
+    assert svc.handle_command("ping") == "pong"
+    assert svc.handle_command("toggle") == "ok"
+    pump(qapp, 300)
+    assert panel.bridge.shown
+    assert svc.handle_command("hide") == "ok"
     pump(qapp, 400)
-    assert not ctl.window.isVisible()
-    assert ctl.handle_command("nonsense") == "unknown command"
+    assert not panel.window.isVisible()
+    assert svc.handle_command("nonsense") == "unknown command"
+    assert panel.handle_command("ping") == "pong"
+    assert svc.handle_command("activate 999999 0 0") == "failed"

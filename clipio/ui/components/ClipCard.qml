@@ -1,4 +1,4 @@
-// One clipboard card: note-paper look, content by kind, time, pin/delete when selected, animations.
+// One clipboard card: note-paper look, content by kind, source app and folder, queue number, pin/delete when selected.
 import QtQuick
 import QtQuick.Effects
 
@@ -16,6 +16,15 @@ Item {
     required property int imgH
     required property bool pinned
     required property real used
+    required property string source
+    required property string tag
+    required property bool secret
+    required property string title
+    required property string rich
+    required property bool template
+
+    property bool showNumber: false                 // Alt is held: show the Alt+number shortcut
+    readonly property int markNo: Store.markNo(cid) // place in the paste queue (0 = not queued)
 
     readonly property bool selected: ListView.isCurrentItem
     readonly property bool hot: selected || press.containsMouse
@@ -28,6 +37,8 @@ Item {
     signal pick(bool paste)
     signal hoverMoved(real gx, real gy)
     signal pinClicked()
+    signal menuRequested()
+    signal markClicked()
     signal deleteClicked()
 
     width: ListView.view ? ListView.view.width : 400
@@ -98,22 +109,61 @@ Item {
             acceptedButtons: Qt.LeftButton | Qt.RightButton
             cursorShape: Qt.PointingHandCursor
             onPositionChanged: m => { const g = press.mapToGlobal(m.x, m.y); root.hoverMoved(g.x, g.y) }
-            onClicked: m => root.pick(m.button === Qt.LeftButton)
+            // left: paste, Ctrl+left: queue, right: menu
+            onClicked: m => {
+                if (m.button === Qt.RightButton) root.menuRequested()
+                else if (m.modifiers & Qt.ControlModifier) root.markClicked()
+                else root.pick(true)
+            }
         }
 
         Item {
             id: content
             x: 16; y: 14
             width: parent.width - 32
-            height: Math.max(body.item ? body.item.implicitHeight : 0, 22)
+            height: Math.max(body.item ? body.item.implicitHeight : 0, 22) + (footer.visible ? footer.height + 6 : 0)
 
             Loader {
                 id: body
                 width: parent.width - (root.kind === "image" ? 0 : 64)
                 sourceComponent: root.kind === "image" ? imageView
+                    : root.secret ? secretView
                     : root.hint === "color" ? colorView
                     : (root.hint === "url" || root.hint === "email") ? linkView
                     : root.hint === "code" ? codeView : textView
+            }
+
+            // bottom line: source app, folder, template mark
+            Row {
+                id: footer
+                anchors { left: parent.left; bottom: parent.bottom }
+                spacing: 6
+                height: 18
+                visible: srcLabel.text !== "" || root.tag !== "" || root.template
+                Text {
+                    id: srcLabel
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: Store.on("show_source") ? Store.appName(root.source) : ""
+                    color: Theme.pencil
+                    font.family: Theme.sans
+                    font.pixelSize: 11
+                }
+                Rectangle {
+                    visible: root.tag !== ""
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: 16; radius: 8
+                    width: tagText.implicitWidth + 14
+                    color: Theme.alpha(Theme.sage, 0.35)
+                    Text { id: tagText; anchors.centerIn: parent; text: root.tag; color: Theme.ink; font.family: Theme.sans; font.pixelSize: 10; font.weight: Font.DemiBold }
+                }
+                Rectangle {
+                    visible: root.template
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: 16; radius: 8
+                    width: tplText.implicitWidth + 14
+                    color: Theme.alpha(Theme.tape, 0.6)
+                    Text { id: tplText; anchors.centerIn: parent; text: Strings.t("templateNote"); color: Theme.ink; font.family: Theme.sans; font.pixelSize: 10; font.weight: Font.DemiBold }
+                }
             }
 
             // top right: time, or actions when selected
@@ -152,6 +202,29 @@ Item {
             }
         }
 
+        // paste queue number (peach circle) on the left edge
+        Rectangle {
+            x: -7; y: 10
+            width: 22; height: 22; radius: 11
+            color: Theme.accent
+            border.width: 2; border.color: Theme.sheet
+            scale: root.markNo > 0 ? 1 : 0
+            visible: scale > 0
+            Behavior on scale { NumberAnimation { duration: 260; easing.type: Easing.OutBack; easing.overshoot: 2.2 } }
+            Text { anchors.centerIn: parent; text: root.markNo; color: Theme.sheet; font.family: Theme.sans; font.pixelSize: 11; font.weight: Font.Bold }
+        }
+
+        // Alt+number shortcut hint while Alt is held
+        Rectangle {
+            anchors { right: parent.right; bottom: parent.bottom; rightMargin: 8; bottomMargin: 8 }
+            width: 22; height: 20; radius: 6
+            color: Theme.alpha(Theme.tape, 0.95)
+            opacity: root.showNumber && root.index < 9 ? 1 : 0
+            visible: opacity > 0
+            Behavior on opacity { NumberAnimation { duration: 120 } }
+            Text { anchors.centerIn: parent; text: root.index + 1; color: Theme.ink; font.family: Theme.mono; font.pixelSize: 12; font.weight: Font.Bold }
+        }
+
         // peach flash when picked
         Rectangle {
             id: flashRect
@@ -184,6 +257,7 @@ Item {
                 id: t
                 width: parent.width
                 text: root.preview.replace(/^\s+/, "")
+                textFormat: Text.PlainText    // copied HTML is shown as text, never rendered
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 maximumLineCount: 3
                 elide: Text.ElideRight
@@ -202,7 +276,9 @@ Item {
             Text {
                 id: t
                 width: parent.width
-                text: root.preview.replace(/^\s*\n/, "").replace(/\s+$/, "")
+                // colored tokens come from the backend, already HTML-escaped
+                text: root.rich !== "" ? root.rich : root.preview.replace(/^\s*\n/, "").replace(/\s+$/, "")
+                textFormat: root.rich !== "" ? Text.StyledText : Text.PlainText
                 wrapMode: Text.WrapAnywhere
                 maximumLineCount: 4
                 elide: Text.ElideRight
@@ -226,9 +302,36 @@ Item {
             Text {
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.meta
+                textFormat: Text.PlainText
                 color: Theme.ink
                 font.family: Theme.mono
                 font.pixelSize: 15; font.weight: Font.DemiBold
+            }
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                text: Store.colorAlt(root.meta)
+                color: Theme.pencil
+                font.family: Theme.mono
+                font.pixelSize: 12
+            }
+        }
+    }
+
+    Component {
+        id: secretView
+        Column {
+            spacing: 4
+            Text {
+                text: "••••••••••••"
+                color: Theme.ink
+                font.family: Theme.mono
+                font.pixelSize: 15; font.letterSpacing: 2
+            }
+            Text {
+                text: Strings.t("secret", Store.secretMinutes)
+                color: Theme.danger
+                font.family: Theme.sans
+                font.pixelSize: 11
             }
         }
     }
@@ -236,15 +339,28 @@ Item {
     Component {
         id: linkView
         Item {
-            implicitHeight: 22
-            Icon { id: linkIcon; name: root.hint === "email" ? "mail" : "link"; size: 14; color: Theme.accent; anchors.verticalCenter: parent.verticalCenter }
+            implicitHeight: root.title !== "" ? 42 : 22
+            // page title above the address when it is known
             Text {
-                anchors { left: linkIcon.right; leftMargin: 8; right: parent.right; verticalCenter: parent.verticalCenter }
+                id: pageTitle
+                visible: root.title !== ""
+                anchors { left: parent.left; right: parent.right; top: parent.top }
+                text: root.title
+                textFormat: Text.PlainText
+                elide: Text.ElideRight
+                color: Theme.ink
+                font.family: Theme.sans
+                font.pixelSize: 14; font.weight: Font.DemiBold
+            }
+            Icon { id: linkIcon; name: root.hint === "email" ? "mail" : "link"; size: 14; color: Theme.accent; anchors.bottom: parent.bottom; anchors.bottomMargin: 4 }
+            Text {
+                anchors { left: linkIcon.right; leftMargin: 8; right: parent.right; verticalCenter: linkIcon.verticalCenter }
                 text: root.preview.trim().replace(/^[a-z]+:\/\/(www\.)?/i, "")
+                textFormat: Text.PlainText
                 elide: Text.ElideMiddle
                 color: Theme.ink
                 font.family: Theme.sans
-                font.pixelSize: 14
+                font.pixelSize: root.title !== "" ? 12 : 14
                 font.underline: true
             }
         }

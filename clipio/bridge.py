@@ -11,12 +11,26 @@ class Bridge(QObject):
     """Holds the state shown in the panel; actions are forwarded to the app controller."""
     stateChanged = Signal()
     shownChanged = Signal()
+    created = Signal(int)                 # a new item was made inside Clipio (edit, convert, OCR)
+    notice = Signal(str)                  # short message for the panel (e.g. "No text found")
+    _workerDone = Signal(str, int, str)   # background result: kind, item id, text (thread -> main)
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self._ctl = None
         self._state = "{}"
         self._shown = False
+        self._workerDone.connect(self._on_worker_done)
+
+    # Hand a background thread's result to the main thread (safe to call from any thread)
+    def post(self, kind: str, item_id: int, text: str) -> None:
+        self._workerDone.emit(kind, item_id, text)
+
+    # Runs in the main thread with a background result
+    @Slot(str, int, str)
+    def _on_worker_done(self, kind: str, item_id: int, text: str) -> None:
+        if self._ctl:
+            self._ctl.worker_done(kind, item_id, text)
 
     # Connect the bridge to the controller that carries out the actions
     def attach(self, controller) -> None:
@@ -52,6 +66,76 @@ class Bridge(QObject):
     def activate(self, item_id: int, paste: bool) -> None:
         self._ctl.activate(item_id, paste)
 
+    # Paste an item with tidied text (no tracking parameters, no extra whitespace)
+    @Slot(int)
+    def activateClean(self, item_id: int) -> None:
+        self._ctl.activate(item_id, True, clean_it=True)
+
+    # Paste the given items one after another (first now, the rest with `clipio next`)
+    @Slot("QVariantList")
+    def startQueue(self, ids) -> None:
+        self._ctl.start_queue([int(i) for i in ids])
+
+    # Paste the next queued item
+    @Slot()
+    def pasteNext(self) -> None:
+        self._ctl.paste_next()
+
+    # Forget the paste queue
+    @Slot()
+    def clearQueue(self) -> None:
+        self._ctl.clear_queue()
+
+    # Save edited text as an item and paste (or only copy) it
+    @Slot(str, bool)
+    def pasteEdited(self, text: str, paste: bool) -> None:
+        self._ctl.paste_edited(text, paste)
+
+    # Whole text of an item (cards only carry a preview)
+    @Slot(int, result=str)
+    def fullText(self, item_id: int) -> str:
+        return self._ctl.full_text(item_id)
+
+    # Conversions that work on an item (names)
+    @Slot(int, result="QVariantList")
+    def conversions(self, item_id: int):
+        return self._ctl.conversions(item_id)
+
+    # Convert an item; the result becomes a new item
+    @Slot(int, str)
+    def convert(self, item_id: int, name: str) -> None:
+        self._ctl.convert(item_id, name)
+
+    # Read the text in an image item (OCR); the text becomes a new item
+    @Slot(int)
+    def ocr(self, item_id: int) -> None:
+        self._ctl.ocr(item_id)
+
+    # Put an item in a folder ('' takes it out)
+    @Slot(int, str)
+    def setTag(self, item_id: int, tag: str) -> None:
+        self._ctl.set_tag(item_id, tag)
+
+    # Stop or start saving copies from an app
+    @Slot(str, bool)
+    def setAppIgnored(self, app: str, ignored: bool) -> None:
+        self._ctl.set_app_ignored(app, ignored)
+
+    # Turn an on/off setting on or off
+    @Slot(str, bool)
+    def setSwitch(self, key: str, on: bool) -> None:
+        self._ctl.set_switch(key, on)
+
+    # Change one panel shortcut ('' = default)
+    @Slot(str, str)
+    def setShortcut(self, action: str, keys: str) -> None:
+        self._ctl.set_shortcut(action, keys)
+
+    # Put every panel shortcut back to its default
+    @Slot()
+    def resetShortcuts(self) -> None:
+        self._ctl.reset_shortcuts()
+
     # Pin or unpin an item
     @Slot(int)
     def togglePin(self, item_id: int) -> None:
@@ -76,6 +160,11 @@ class Bridge(QObject):
     @Slot(int)
     def setRetention(self, days: int) -> None:
         self._ctl.set_retention(days)
+
+    # Change how many minutes the closed panel stays loaded (0 = free its memory at once)
+    @Slot(int)
+    def setPanelKeep(self, minutes: int) -> None:
+        self._ctl.set_panel_keep(minutes)
 
     # Send fresh state to the panel
     @Slot()

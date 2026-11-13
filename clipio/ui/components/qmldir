@@ -9,3 +9,5 @@ Panel Panel.qml
 Tabs Tabs.qml
 Dialog Dialog.qml
 PaperButton PaperButton.qml
+Settings Settings.qml
+GuideDemo GuideDemo.qml

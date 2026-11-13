@@ -12,10 +12,10 @@
 </div>
 
 <p align="center">
-  <img src="docs/assets/overview.png" alt="The Clipio panel showing a pinned note, a link, a color, a code snippet and an image in a list of paper cards" width="440" />
+  <img src="docs/assets/demo.gif" alt="Clipio opening, moving through the cards with the arrow keys, searching for git and for a color, then showing the settings page" width="456" />
 </p>
 
-<p align="center"><em>The real Clipio panel with sample data: a pinned note, a link, a color, two lines of code and a copied image.</em></p>
+<p align="center"><em>The real Clipio panel with sample data: open it, move with the arrow keys, type to search, change settings.</em></p>
 
 ## What is Clipio?
 
@@ -25,6 +25,17 @@ It is made for people who copy the same things again and again and want a simple
 
 Clipio runs on **Windows 10/11, macOS and Linux** (X11 and Wayland). It is written in Python with a Qt Quick interface through PySide6.
 
+### Light on memory
+
+A clipboard history has to keep running to notice what you copy, so Clipio is split in two:
+
+| Part | When it runs | Memory |
+| --- | --- | --- |
+| **Recorder** — watches the clipboard, saves items, pastes, hotkey, tray | always, in the background | about 25 MB of its own on Linux (≈ 85 MB counting the Python and Qt libraries it shares) |
+| **Panel** — the window you see | only while you use it, plus 5 minutes after you close it | freed completely when it quits |
+
+Before 0.3 the whole app, window included, stayed loaded all the time (≈ 420 MB on Linux). Now the panel quits on its own once you stop using it, and the first open after that takes about a second. You choose the trade-off under *Settings → Storage → Keep the panel ready after closing*: free at once, 1, 5 or 30 minutes, or always.
+
 ## Features
 
 - **One-shortcut history** — Open the panel, choose an item and it is pasted into the app you were using.
@@ -32,7 +43,14 @@ Clipio runs on **Windows 10/11, macOS and Linux** (X11 and Wayland). It is writt
 - **Search and tabs** — Type to filter, or switch between All, Text, Images and Pinned.
 - **Pins that stay** — Pin the things you reuse. Pinned items are never deleted automatically or by *Clear*.
 - **Automatic cleanup** — Choose how long items are kept (1, 3, 7, 14 or 30 days) in the settings window.
-- **Privacy controls** — Pause recording at any time, list apps whose copies are never saved, and copies that password managers mark as secret are skipped.
+- **Privacy controls** — Pause recording at any time, list apps whose copies are never saved, and copies that password managers mark as secret are skipped. Password manager apps are always skipped.
+- **Secrets hide themselves** — Passwords, API keys, tokens and card numbers are shown as dots and deleted after a few minutes.
+- **Clean links** — Tracking parameters (`utm_…`, `fbclid`, `gclid`…) are removed from copied links. *Paste cleaned* also tidies spaces.
+- **Paste queue** — Mark several cards and paste them one after another.
+- **Card menu** — Right-click a card to edit it before pasting, convert it (UPPER/lower case, JSON, Base64, URL, HEX ↔ RGB), put it in a folder, read text from an image (OCR, needs `tesseract`) or stop saving copies from its app.
+- **Folders and templates** — Pinned items can live in folders. Pinned snippets with `{date}`, `{time}`, `{datetime}`, `{weekday}` or `{clipboard}` are filled in when pasted.
+- **Small in the background** — Only a light recorder stays running; the panel frees its memory when you are done (see [Light on memory](#light-on-memory)).
+- **Smart cards** — Colors show both notations, code is colored, links can show their page title, and every card shows the app it came from. Type `@firefox` to filter by app.
 
 ## Usage
 
@@ -54,8 +72,12 @@ Inside the panel:
 | --- | --- |
 | <kbd>↑</kbd> <kbd>↓</kbd> · <kbd>PgUp</kbd> <kbd>PgDn</kbd> | Move the selection |
 | <kbd>Enter</kbd> · left click | Paste the selected item |
-| <kbd>Shift</kbd> + <kbd>Enter</kbd> · right click | Copy it without pasting |
-| <kbd>Alt</kbd> + <kbd>1</kbd>–<kbd>9</kbd> | Paste one of the first nine items |
+| <kbd>Shift</kbd> + <kbd>Enter</kbd> | Paste it cleaned (no tracking, tidy spaces) |
+| <kbd>Ctrl</kbd> + <kbd>C</kbd> | Copy it without pasting |
+| right click · <kbd>Ctrl</kbd> + <kbd>M</kbd> | Card menu (edit, convert, folder, OCR…) |
+| <kbd>Ctrl</kbd> + <kbd>E</kbd> | Edit, then paste |
+| <kbd>Ctrl</kbd> + click · <kbd>Ctrl</kbd> + <kbd>Space</kbd> | Add to the paste queue; <kbd>Enter</kbd> pastes the first, `clipio next` the rest |
+| <kbd>Alt</kbd> + <kbd>1</kbd>–<kbd>9</kbd> | Paste one of the first nine items (hold <kbd>Alt</kbd> to see the numbers) |
 | <kbd>Ctrl</kbd> + <kbd>P</kbd> (<kbd>⌘</kbd> + <kbd>P</kbd> on macOS) | Pin or unpin |
 | <kbd>Del</kbd> | Delete the selected item |
 | <kbd>Tab</kbd> · <kbd>Shift</kbd> + <kbd>Tab</kbd> | Next or previous tab |
@@ -134,6 +156,12 @@ The first run creates `config.toml` in the settings folder. The retention period
 | `persist` | Put the last item back when the source app empties the clipboard | `true` |
 | `hotkey` | Global shortcut, e.g. `"ctrl+alt+v"` | see the table above |
 | `ignore_apps` | Apps whose copies are never saved, e.g. `["KeePassXC", "1Password"]` | `[]` |
+| `clean_links` | Remove tracking parameters from copied links | `true` |
+| `secret_minutes` | Minutes before copied passwords, keys and card numbers are deleted | `5` |
+| `link_titles` | Fetch page titles of copied links (sends a request to the site) | `false` |
+| `panel_keep_minutes` | Minutes the closed panel stays loaded before it frees its memory (`0` = at once, `1440` = always ready) | `5` |
+
+Most settings can be changed in the panel instead: the gear button (or <kbd>Ctrl</kbd> + <kbd>,</kbd>) opens a settings page with an animated **How to** guide, **Shortcuts** (click a key and press the new one), **Features** (switch each feature on or off) and **Storage**. Shortcuts are saved as `key_paste`, `key_edit`… and features as `clean_links`, `detect_secrets`, `templates`, `code_colors`, `show_source`, `quick_numbers`, `link_titles`.
 
 Run `clipio stop` and `clipio start` after editing the file.
 
@@ -144,10 +172,11 @@ Run `clipio stop` and `clipio start` after editing the file.
 ```bash
 clipio start            # start Clipio in the background
 clipio toggle           # open or close the panel
+clipio next             # paste the next item of the paste queue (bind it to a key)
 clipio pause            # stop recording (clipio resume to continue)
 clipio retention 7      # keep items for 7 days and clean up now
 clipio autostart on     # start at login (off to undo)
-clipio status           # running state, item count and database path
+clipio status           # running state, whether the panel is loaded, item count, database path
 clipio stop             # quit Clipio
 ```
 
@@ -159,7 +188,7 @@ cd clipio
 python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -e ".[test]"
-clipio run                         # runs in this terminal; Ctrl+C stops it
+clipio run                         # runs the service in this terminal; Ctrl+C stops it
 ```
 
 ## How it works
@@ -168,12 +197,17 @@ clipio run                         # runs in this terminal; Ctrl+C stops it
 | --- | --- |
 | `clipio/core/` | Classifies items, stores them in SQLite and applies the limits. No operating-system code. |
 | `clipio/system/` | One small backend per platform: clipboard, paste keystroke, global shortcut, start at login. |
-| `clipio/app.py` | The running app: watches the clipboard, shows the panel, answers `clipio` commands over a local socket. |
+| `clipio/app.py` | The background service: watches the clipboard, pastes, answers `clipio` commands over a local socket. |
+| `clipio/panel.py` | The panel process: started when you open the panel, quits by itself when unused. |
 | `clipio/ui/` | The panel, written in QML (Qt Quick). |
 
 [MAP.md](MAP.md) describes the full architecture, including which backend each system uses. Each folder has its own `README.md` that explains its files.
 
-The test suite runs on Windows, macOS and Linux with every supported Python version on each push ([tests workflow](https://github.com/ardazeybek/clipio/actions/workflows/ci.yml)).
+<p align="center">
+  <img src="docs/assets/settings.png" alt="The Clipio settings page on the Storage tab: how long copies are kept and how long the closed panel stays ready" width="400" />
+</p>
+
+The test suite runs on Windows, macOS and Linux with every supported Python version on each push, including an end-to-end test that starts the real service and panel processes ([tests workflow](https://github.com/ardazeybek/clipio/actions/workflows/ci.yml)).
 
 ## Contributing
 

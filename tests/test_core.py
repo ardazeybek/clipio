@@ -70,6 +70,27 @@ def test_broken_config_falls_back_to_defaults():
     assert config.load()["max_items"] == 500
 
 
+# Wrong types and out-of-range numbers in config.toml fall back to safe values
+def test_bad_config_values_are_corrected():
+    paths.config_file().parent.mkdir(parents=True, exist_ok=True)
+    paths.config_file().write_text('retention_days = 0\nmax_items = "lots"\npersist = 3\nignore_apps = "x"\n')
+    cfg = config.load()
+    assert cfg["retention_days"] == 1
+    assert cfg["max_items"] == config.DEFAULTS["max_items"]
+    assert cfg["persist"] is True
+    assert cfg["ignore_apps"] == []
+
+
+# Pasting an image whose file is gone removes the broken item
+def test_copy_drops_item_with_missing_image(con):
+    from conftest import FakeClipboard
+    png = b"\x89PNG\r\n\x1a\n" + b"\0" * 16
+    item_id = ingest.capture(con, Snapshot(image=png), "", config.load())
+    (paths.image_dir() / db.get(con, item_id)["image_file"]).unlink()
+    assert actions.copy(con, FakeClipboard(), item_id) is False
+    assert db.get(con, item_id) is None
+
+
 def test_same_text_is_stored_once(con):
     a = add_text(con, "hello")
     b = add_text(con, "hello")
@@ -136,3 +157,102 @@ def test_state_export(con):
     assert state["total"] == 1 and state["retention_days"] == 14 and not state["paused"]
     item = state["items"][0]
     assert item["hint"] == "url" and item["preview"] == "https://example.com"
+
+
+def test_clean_links_and_text():
+    from clipio.core import clean
+    assert clean.clean_url("https://a.com/p?utm_source=x&id=3&fbclid=y") == "https://a.com/p?id=3"
+    assert clean.clean_url("https://a.com/p?id=3") == "https://a.com/p?id=3"
+    assert clean.clean_text("  hi   there  \n\n\n\nbye ") == "hi there\n\nbye"
+    assert clean.join_lines("one\ntwo\n\nthree") == "one two\n\nthree"
+
+
+def test_copied_link_is_cleaned(con):
+    i = add_text(con, "https://shop.com/x?utm_medium=mail&q=1")
+    assert db.get(con, i)["text"] == "https://shop.com/x?q=1"
+
+
+@pytest.mark.parametrize("name,src,out", [
+    ("upper", "abc", "ABC"),
+    ("json_pretty", '{"a":1}', '{\n  "a": 1\n}'),
+    ("base64_encode", "hi", "aGk="),
+    ("base64_decode", "aGk=", "hi"),
+    ("hex_to_rgb", "#ff0000", "rgb(255, 0, 0)"),
+    ("rgb_to_hex", "rgb(0, 128, 255)", "#0080FF"),
+    ("json_pretty", "not json", None),
+])
+def test_transforms(name, src, out):
+    from clipio.core import transform
+    assert transform.apply(name, src) == out
+
+
+@pytest.mark.parametrize("text,secret", [
+    ("4111 1111 1111 1111", True),
+    ("ghp_" + "a1B2" * 9, True),
+    ("Kx9#mQ2!vL7p", True),
+    ("hello world", False),
+    ("1234 5678", False),
+])
+def test_sensitive(text, secret):
+    from clipio.core import sensitive
+    assert sensitive.is_sensitive(text) is secret
+
+
+def test_secrets_expire_and_password_managers_skipped(con):
+    i = add_text(con, "4111 1111 1111 1111")
+    assert db.get(con, i)["secret"] == 1
+    con.execute("UPDATE items SET created=created-3600 WHERE id=?", (i,))
+    maintenance.run(con)
+    assert db.get(con, i) is None
+    assert add_text(con, "pw", source="org.keepassxc.KeePassXC") is None
+
+
+def test_templates_tags_and_convert(con, fake_clipboard):
+    from clipio.core import template
+    assert template.expand("{year}!", now=0) == time.strftime("%Y", time.localtime(0)) + "!"
+    i = add_text(con, "Hi {clipboard}")
+    db.set_tag(con, i, "Mail")
+    assert db.get(con, i)["pinned"] == 1 and db.tags(con) == ["Mail"]
+    fake_clipboard.write_text("Ada")
+    actions.copy(con, fake_clipboard, i)
+    assert fake_clipboard.text == "Hi Ada"
+    j = add_text(con, "abc")
+    new = actions.convert(con, j, "upper")
+    assert db.get(con, new)["text"] == "ABC"
+    assert "upper" in actions.conversions(con, j)
+
+
+def test_ignore_app_setting():
+    actions.ignore_app("Telegram")
+    assert config.load()["ignore_apps"] == ["Telegram"]
+    actions.unignore_app("telegram")
+    assert config.load()["ignore_apps"] == []
+    actions.set_switch("link_titles", True)
+    assert config.load()["link_titles"] is True
+
+
+def test_code_highlight_escapes_html():
+    from clipio.core import highlight
+    out = highlight.to_rich("if a < b: return '<x>'")
+    assert "&lt;x&gt;" in out and "<font" in out and "<x>" not in out
+
+
+def test_shortcuts_and_features_are_saved(con):
+    assert actions.set_shortcut("edit", "Ctrl+Shift+E")
+    assert config.load()["key_edit"] == "Ctrl+Shift+E"
+    assert not actions.set_shortcut("nope", "X")
+    actions.reset_shortcuts()
+    assert config.load()["key_edit"] == "Ctrl+E"
+    actions.set_switch("detect_secrets", False)
+    assert add_text(con, "4111 1111 1111 1111") and db.latest(con)["secret"] == 0
+    state = export.build_state(con)
+    assert state["shortcuts"]["paste"] == "Return" and state["features"]["detect_secrets"] is False
+
+
+def test_panel_keep_minutes_setting():
+    assert config.load()["panel_keep_minutes"] == 5
+    assert actions.set_panel_keep(99999) == 1440
+    assert config.load()["panel_keep_minutes"] == 1440
+    actions.set_panel_keep(-3)
+    assert config.load()["panel_keep_minutes"] == 0
+    assert export.build_state(db.connect())["panel_keep_minutes"] == 0

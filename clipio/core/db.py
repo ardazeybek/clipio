@@ -25,6 +25,13 @@ CREATE TABLE IF NOT EXISTS items (
 CREATE INDEX IF NOT EXISTS idx_used ON items(used);
 """
 
+# Columns added after the first release: name -> definition (added to old databases on connect)
+EXTRA_COLUMNS = {
+    "tag": "TEXT NOT NULL DEFAULT ''",        # folder name for pinned items
+    "secret": "INTEGER NOT NULL DEFAULT 0",   # 1 when the text looks like a password or key
+    "title": "TEXT NOT NULL DEFAULT ''",      # page title of a link
+}
+
 
 # Connect to the database and create the schema
 def connect() -> sqlite3.Connection:
@@ -33,7 +40,17 @@ def connect() -> sqlite3.Connection:
     con.row_factory = sqlite3.Row
     con.execute("PRAGMA journal_mode=WAL")
     con.executescript(SCHEMA)
+    _migrate(con)
     return con
+
+
+# Add columns that older databases do not have yet
+def _migrate(con: sqlite3.Connection) -> None:
+    have = {r["name"] for r in con.execute("PRAGMA table_info(items)")}
+    for name, definition in EXTRA_COLUMNS.items():
+        if name not in have:
+            con.execute(f"ALTER TABLE items ADD COLUMN {name} {definition}")
+    con.commit()
 
 
 # Refresh the "last used" time if the same content exists, otherwise insert a new row
@@ -155,3 +172,32 @@ def sweep_orphan_images(con: sqlite3.Connection) -> None:
 def touch(con: sqlite3.Connection, item_id: int) -> None:
     con.execute("UPDATE items SET used=? WHERE id=?", (time.time(), item_id))
     con.commit()
+
+
+# Put an item in a folder ('' removes it); a folder also pins the item
+def set_tag(con: sqlite3.Connection, item_id: int, tag: str) -> None:
+    tag = tag.strip()[:40]
+    con.execute("UPDATE items SET tag=?, pinned=CASE WHEN ?<>'' THEN 1 ELSE pinned END WHERE id=?",
+                (tag, tag, item_id))
+    con.commit()
+
+
+# Folder names in use, A-Z
+def tags(con: sqlite3.Connection) -> list[str]:
+    rows = con.execute("SELECT DISTINCT tag FROM items WHERE tag<>'' ORDER BY tag COLLATE NOCASE")
+    return [r[0] for r in rows]
+
+
+# Save a link's page title
+def set_title(con: sqlite3.Connection, item_id: int, title: str) -> None:
+    con.execute("UPDATE items SET title=? WHERE id=?", (title[:200], item_id))
+    con.commit()
+
+
+# Delete unpinned secret items older than the given minutes
+def purge_secrets(con: sqlite3.Connection, minutes: float) -> int:
+    cutoff = time.time() - minutes * 60
+    rows = con.execute(
+        "SELECT id, image_file FROM items WHERE secret=1 AND pinned=0 AND created<?", (cutoff,)
+    ).fetchall()
+    return _delete_rows(con, rows)

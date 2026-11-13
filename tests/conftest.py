@@ -38,6 +38,11 @@ class FakeClipboard:
         self.text = text
         return True
 
+    # What is on the clipboard now, as a backend would return it
+    def read(self):
+        from clipio.core.ingest import Snapshot
+        return Snapshot(formats=["text/plain"], text=self.text.encode() if self.text else None)
+
     # Remember a written image
     def write_image(self, data, mime):
         self.image = (data, mime)

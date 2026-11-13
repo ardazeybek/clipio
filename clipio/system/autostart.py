@@ -8,7 +8,7 @@ RUN_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
 
 
 # The Python interpreter to start Clipio with (pythonw on Windows: no console window)
-def _python() -> str:
+def python_exe() -> str:
     exe = Path(sys.executable)
     if sys.platform == "win32":
         w = exe.with_name("pythonw.exe")
@@ -19,7 +19,12 @@ def _python() -> str:
 
 # Command line that runs Clipio in the background
 def command() -> list[str]:
-    return [_python(), "-m", "clipio", "run"]
+    return [python_exe(), "-m", "clipio", "run"]
+
+
+# Command line that starts the panel process (the service runs it when the panel opens)
+def panel_command() -> list[str]:
+    return [python_exe(), "-m", "clipio", "panel"]
 
 
 # Location of the macOS LaunchAgent file
@@ -35,7 +40,8 @@ def linux_desktop() -> Path:
 
 # macOS LaunchAgent contents
 def mac_plist_text() -> str:
-    args = "".join(f"\n        <string>{a}</string>" for a in command())
+    from xml.sax.saxutils import escape
+    args = "".join(f"\n        <string>{escape(a)}</string>" for a in command())
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">

@@ -1,4 +1,5 @@
 """Operating-system integration: clipboard, paste keystroke, global shortcut, autostart."""
+import functools
 import os
 import shutil
 import subprocess
@@ -23,6 +24,7 @@ def is_hyprland() -> bool:
 
 
 # True when `wl-paste --watch` works (the compositor supports the data-control protocol)
+@functools.lru_cache(maxsize=1)
 def wayland_watch_supported() -> bool:
     if not shutil.which("wl-paste") or not shutil.which("wl-copy"):
         return False
@@ -42,6 +44,9 @@ def wayland_watch_supported() -> bool:
 # Choose the Qt platform before the app starts: on Wayland without data-control
 # (for example GNOME) run through XWayland so the clipboard can be watched
 def prepare_qt_env() -> None:
+    if os.environ.get("CLIPIO_QPA_CHECKED"):   # the service already decided for its panel process
+        return
+    os.environ["CLIPIO_QPA_CHECKED"] = "1"
     if sys.platform.startswith("linux") and os.environ.get("WAYLAND_DISPLAY") \
             and "QT_QPA_PLATFORM" not in os.environ \
             and os.environ.get("DISPLAY") and not wayland_watch_supported():

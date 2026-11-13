@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "clipio"
-version = "0.2.0"
+version = "0.3.0"
 description = "A paper-themed clipboard history for Windows, macOS and Linux."
 readme = "README.md"
 license = "MIT"

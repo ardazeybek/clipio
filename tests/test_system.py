@@ -105,6 +105,8 @@ def test_windows_helpers():
     hwnd = windows.foreground_window()
     assert isinstance(windows.process_name(hwnd), str)
     assert windows.process_name(0) == ""
+    assert windows.force_focus(0) is False
+    windows.allow_foreground()   # must not raise
 
 
 @on_macos
@@ -132,3 +134,46 @@ def test_ipc_roundtrip(qapp):
     if client.poll() is None:
         client.kill()
     assert client.communicate(timeout=5)[0].strip() == "echo:hello there"
+
+
+def test_memory_trim_is_safe():
+    from clipio.system import memory
+    memory.trim()   # must never raise, on any OS
+
+
+def test_ipc_post_reaches_server_without_waiting(qapp):
+    """A fire-and-forget message arrives; posting to nobody calls on_fail."""
+    import time
+    from clipio import ipc
+    got, failed = [], []
+    server = ipc.Server(lambda line: got.append(line) or "ok", role="posttest")
+    assert server.listen()
+    ipc.post("panel shown", "posttest")
+    ipc.post("hello", "nobody-listens", on_fail=lambda: failed.append(1))
+    deadline = time.monotonic() + 5
+    while (not got or not failed) and time.monotonic() < deadline:
+        qapp.processEvents()
+    server.close()
+    assert got == ["panel shown"]
+    assert failed == [1]
+
+
+def test_panel_link_follows_panel_reports(monkeypatch):
+    from clipio import panel_link
+    spawned = []
+    link = panel_link.PanelLink()
+    monkeypatch.setattr(link, "_spawn", lambda: spawned.append(1))
+    link.show()                         # nothing runs yet: start the panel process
+    assert spawned == [1]
+    assert link.report("ready") == "ok" and link.running and not link.shown
+    link.report("shown")
+    assert link.shown
+    link.report("hidden")
+    assert link.running and not link.shown
+    link.report("exit")
+    assert not link.running
+    assert link.report("bogus") == "unknown command"
+
+
+def test_panel_command_runs_the_panel():
+    assert autostart.panel_command()[-3:] == ["-m", "clipio", "panel"]

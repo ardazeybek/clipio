@@ -9,6 +9,9 @@ if sys.platform == "win32":
     _kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
     _user32.GetForegroundWindow.restype = wintypes.HWND
     _user32.SetForegroundWindow.argtypes = [wintypes.HWND]
+    _user32.BringWindowToTop.argtypes = [wintypes.HWND]
+    _user32.AttachThreadInput.argtypes = [wintypes.DWORD, wintypes.DWORD, wintypes.BOOL]
+    _user32.AllowSetForegroundWindow.argtypes = [wintypes.DWORD]
     _user32.GetWindowThreadProcessId.argtypes = [wintypes.HWND, ctypes.POINTER(wintypes.DWORD)]
     _kernel32.OpenProcess.restype = wintypes.HANDLE
     _kernel32.QueryFullProcessImageNameW.argtypes = [wintypes.HANDLE, wintypes.DWORD,
@@ -27,6 +30,27 @@ def foreground_window() -> int:
 # Give focus back to a window
 def focus_window(hwnd: int) -> bool:
     return bool(hwnd) and bool(_user32.SetForegroundWindow(hwnd))
+
+
+# Bring one of Clipio's own windows to the front, even when Windows' focus lock refuses at first
+def force_focus(hwnd: int) -> bool:
+    if not hwnd or focus_window(hwnd):
+        return bool(hwnd)
+    # attach to the thread that has focus now, so Windows lets this thread take it over
+    fg_thread = _user32.GetWindowThreadProcessId(_user32.GetForegroundWindow(), None)
+    own_thread = _kernel32.GetCurrentThreadId()
+    attached = fg_thread and fg_thread != own_thread and _user32.AttachThreadInput(own_thread, fg_thread, True)
+    try:
+        _user32.BringWindowToTop(hwnd)
+        return focus_window(hwnd)
+    finally:
+        if attached:
+            _user32.AttachThreadInput(own_thread, fg_thread, False)
+
+
+# Let another process (the panel) take focus; the service may grant it after a hotkey or tray click
+def allow_foreground() -> None:
+    _user32.AllowSetForegroundWindow(0xFFFFFFFF)   # ASFW_ANY
 
 
 # Program name of the process that owns a window, e.g. "notepad" (empty when unknown)
