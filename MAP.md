@@ -15,7 +15,8 @@ A paper-themed clipboard history for Windows, macOS and Linux, written in Python
   - `ui/` — QML window (`Main.qml`), `components/`, `icons/`, `assets/` (logo)
 - `tests/` — pytest suite; runs headless (`QT_QPA_PLATFORM=offscreen`); `test_e2e.py` runs real service and panel processes
 - `docs/` — `capture.py` renders the README pictures; `assets/` holds them (overview, demo GIF, settings)
-- `.github/workflows/ci.yml` — tests on Windows, macOS and Linux with Python 3.10–3.14
+- `.github/` — `workflows/ci.yml` (tests on Windows, macOS and Linux with Python 3.10–3.14), issue and pull request templates
+- `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md` — community files GitHub shows on the repo page
 
 ## Two processes (memory)
 - **Service** (`clipio run`): always on, ~25 MB of its own memory (the rest is shared Python/Qt libraries). Clipboard, saving, paste keystroke, hotkey, tray, `clipio` commands, paste queue. Never imports QtQml/QtQuick. Gives freed memory back after big items and hourly (`system/memory.py`).

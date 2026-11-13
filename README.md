@@ -8,7 +8,7 @@
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-E58F6F" alt="MIT license" /></a>
     <img src="https://img.shields.io/badge/python-3.10%E2%80%933.14-9CC3A6" alt="Python 3.10 to 3.14" />
   </p>
-  <p><a href="#quick-start">Quick start</a> · <a href="#usage">Usage</a> · <a href="CONTRIBUTING.md">Contribute</a> · <a href="mailto:quantastudio.dev@gmail.com">Contact</a></p>
+  <p><a href="#quick-start">Quick start</a> · <a href="#usage">Usage</a> · <a href="CONTRIBUTING.md">Contribute</a> · <a href="https://github.com/ardazeybek/clipio/discussions">Discussions</a> · <a href="mailto:quantastudio.dev@gmail.com">Contact</a></p>
 </div>
 
 <p align="center">
@@ -221,3 +221,7 @@ Bug reports, testing on other desktops, documentation fixes and design ideas are
 ## License
 
 Clipio is released under the [MIT License](LICENSE).
+
+---
+
+<p align="center">If Clipio saves you time, a star on GitHub helps other people find it.</p>

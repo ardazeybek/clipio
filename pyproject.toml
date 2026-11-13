@@ -19,7 +19,7 @@ dependencies = [
     "pynput>=1.7; sys_platform == 'darwin'",
     "python-xlib>=0.33; sys_platform == 'linux'",
 ]
-keywords = ["clipboard", "clipboard-manager", "clipboard-history", "qt", "pyside6"]
+keywords = ["clipboard", "clipboard-manager", "clipboard-history", "paste", "productivity", "qt", "qml", "pyside6", "wayland", "hyprland", "x11", "tray"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Win32 (MS Windows)",
@@ -39,6 +39,8 @@ test = ["pytest>=7"]
 [project.urls]
 Homepage = "https://github.com/ardazeybek/clipio"
 Issues = "https://github.com/ardazeybek/clipio/issues"
+Changelog = "https://github.com/ardazeybek/clipio/releases"
+Discussions = "https://github.com/ardazeybek/clipio/discussions"
 
 [project.scripts]
 clipio = "clipio.cli:main"
