@@ -1,6 +1,7 @@
 """Local socket channels: `clipio` commands and the panel talk to the background service,
 and the service talks to the panel process. role "" is the service, role "panel" the panel."""
 import getpass
+import hashlib
 import os
 import re
 
@@ -8,6 +9,7 @@ from PySide6.QtCore import QObject
 from PySide6.QtNetwork import QLocalServer, QLocalSocket
 
 PANEL = "panel"
+MAX_NAME = 32           # longest socket name (fits macOS' 104-byte socket path limit)
 _pending: set = set()   # sockets of fire-and-forget messages still on their way
 
 
@@ -21,7 +23,11 @@ def server_name(role: str = "") -> str:
         except Exception:
             user = "user"
         base = "clipio-" + re.sub(r"[^A-Za-z0-9_-]", "_", user)
-    return f"{base}-{role}" if role else base
+    name = f"{base}-{role}" if role else base
+    # macOS keeps socket paths under 104 bytes and its temp folder is long: shorten long names
+    if len(name) > MAX_NAME:
+        name = name[:MAX_NAME - 9] + "-" + hashlib.sha1(name.encode()).hexdigest()[:8]
+    return name
 
 
 # Send one command and wait for its reply (None when nobody listens)

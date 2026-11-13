@@ -177,3 +177,10 @@ def test_panel_link_follows_panel_reports(monkeypatch):
 
 def test_panel_command_runs_the_panel():
     assert autostart.panel_command()[-3:] == ["-m", "clipio", "panel"]
+
+
+def test_ipc_names_stay_short(monkeypatch):
+    from clipio import ipc
+    monkeypatch.setenv("CLIPIO_IPC_NAME", "x" * 80)
+    a, b = ipc.server_name(), ipc.server_name("panel")
+    assert len(a) <= ipc.MAX_NAME and len(b) <= ipc.MAX_NAME and a != b

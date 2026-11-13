@@ -11,7 +11,7 @@ Files:
 - `panel_link.py` — service side of the panel: starts the panel process and sends it commands without ever waiting for it
 - `panel.py` — the panel process: `PanelController` loads the QML window, changes the database and asks the service to copy and paste
 - `bridge.py` — `Backend`, the QML singleton the panel reads state from and sends actions to
-- `ipc.py` — local sockets: the service channel and the panel channel, waiting (`send`) and fire-and-forget (`post`)
+- `ipc.py` — local sockets: the service channel and the panel channel, waiting (`send`) and fire-and-forget (`post`); long names are shortened to fit macOS
 - `core/` — platform-independent logic (see its README)
 - `system/` — operating-system integration (see its README)
 - `ui/` — QML window and components
