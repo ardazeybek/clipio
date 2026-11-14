@@ -64,6 +64,7 @@ QtObject {
         f_code_colors: "Color code", fd_code_colors: "Keywords, strings and comments in code cards get colors.",
         f_show_source: "Show the source app", fd_show_source: "Each card shows which app it was copied from.",
         f_quick_numbers: "Alt + number", fd_quick_numbers: "Alt + 1…9 pastes one of the first nine cards.",
+        f_auto_update: "Automatic updates", fd_auto_update: "Clipio looks for a new version when it starts and once a day, then installs it quietly while you are not using it.",
         f_link_titles: "Page titles for links", fd_link_titles: "Shows the title of a copied web page. Clipio visits the link to read it, so it is off by default."
     })
 

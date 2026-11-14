@@ -24,7 +24,7 @@ Item {
         { kind: "quick_numbers", action: "" }, { kind: "app_filter", action: "" }
     ]
     readonly property var actionList: ["paste", "paste_clean", "copy", "menu", "edit", "mark", "pin", "delete", "next_tab", "prev_tab", "settings"]
-    readonly property var featureList: ["clean_links", "detect_secrets", "templates", "code_colors", "show_source", "quick_numbers", "link_titles"]
+    readonly property var featureList: ["clean_links", "detect_secrets", "templates", "code_colors", "show_source", "quick_numbers", "auto_update", "link_titles"]
 
     // Start recording a new shortcut for an action
     function capture(action) { capturing = action; keyCatcher.forceActiveFocus() }

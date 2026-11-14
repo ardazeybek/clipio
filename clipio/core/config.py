@@ -34,6 +34,7 @@ FEATURES = {
     "code_colors": True,      # color code cards
     "show_source": True,      # show the app an item came from
     "quick_numbers": True,    # Alt+1…9 pastes the first nine cards
+    "auto_update": True,      # download and install new versions by itself (packaged app)
 }
 
 DEFAULTS = {
@@ -63,6 +64,7 @@ ignore_apps = []             # e.g. ["KeePassXC", "1Password"]
 clean_links = true           # remove tracking parameters from copied links
 secret_minutes = 5           # minutes before copied passwords, keys and card numbers are deleted
 link_titles = false          # fetch page titles of copied links (sends a request to the site)
+auto_update = true           # install new versions by itself (Python installs are only told)
 panel_keep_minutes = 5       # minutes the closed panel stays loaded (opens instantly), then frees its memory; 0 = free at once
 # Everything else (features and in-panel shortcuts such as key_edit = "Ctrl+E")
 # can be changed in the panel's settings page.

@@ -12,4 +12,5 @@ Operating-system integration. Each file hides one platform difference behind a s
 - `windows.py` — Win32 helpers (focused window, process name, Ctrl+V, letting the panel process take focus)
 - `memory.py` — gives freed memory back to the OS (glibc `malloc_trim`, macOS zone relief, Windows working set)
 - `ocr.py` — reads text from image items with Tesseract (only when it is installed)
+- `updater.py` — automatic updates: checks the latest GitHub release, downloads this computer's file, verifies it against `SHA256SUMS`, runs the installer silently (`setup --silent`); Python installs only get a note
 - `linktitle.py` — fetches a copied link's page title in the background (only when `link_titles` is on)

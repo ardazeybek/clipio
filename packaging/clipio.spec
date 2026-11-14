@@ -54,7 +54,7 @@ a = Analysis(
     [str(ROOT / "packaging" / "entry.py")],
     pathex=[str(ROOT)],
     datas=[(str(ROOT / "clipio" / "ui"), "clipio/ui")],
-    hiddenimports=["clipio.app", "clipio.panel", "clipio.setup.window", "PySide6.QtSvg",
+    hiddenimports=["clipio.app", "clipio.panel", "clipio.setup.window", "PySide6.QtSvg", "certifi",
                    *(["pynput.keyboard._darwin", "pynput.mouse._darwin"] if MAC else []),
                    *(["Xlib.ext.xtest"] if not (WIN or MAC) else [])],
     excludes=["tkinter", "unittest", "pydoc", "PySide6.QtNetworkAuth", "PySide6.QtSql",

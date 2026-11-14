@@ -3,7 +3,10 @@
 It stays small on purpose (no QML, no graphics driver): the panel runs in its own process
 (`clipio/panel.py`), started on demand by `PanelLink` and closed again after a while unused.
 """
+import shutil
+import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -14,13 +17,16 @@ from PySide6.QtWidgets import QApplication, QMenu, QSystemTrayIcon
 from . import APP_ID, __version__, ipc, system
 from .core import actions, config, db, ingest, maintenance, paths
 from .panel_link import PanelLink
-from .system import active_app, autostart, linktitle, memory
+from .system import active_app, autostart, linktitle, memory, updater
 from .system.hotkey import GlobalHotkey
 from .system.paste import Paster
 
 UI_DIR = Path(__file__).resolve().parent / "ui"
 LOGO = UI_DIR / "assets" / "clipio.svg"
 MAINTENANCE_MS = 3600 * 1000      # hourly housekeeping
+UPDATE_FIRST_MS = 60 * 1000       # first update check a minute after starting (login stays quick)
+UPDATE_EVERY_MS = 24 * 3600 * 1000  # then once a day, for computers that are never restarted
+UPDATE_RETRY_MS = 60 * 1000       # a ready update waits this long while the panel or paste queue is busy
 OWN_WRITE_GRACE = 1.0             # seconds to ignore clipboard events caused by Clipio itself
 PASTE_DELAY_MS = 120              # time the panel needs to give focus back before the paste keystroke
 QUEUE_PRELOAD_MS = 600            # copy the next queued item this long after a queued paste
@@ -30,6 +36,8 @@ BIG_ITEM = 512 * 1024             # after saving something this big, give memory
 class _Relay(QObject):
     """Moves a background thread's result to the main thread."""
     done = Signal(int, str)
+    update_ready = Signal(str, list)    # version, installer command
+    update_available = Signal(str)      # version (Python installs: tell only)
 
 
 class Controller:
@@ -47,6 +55,10 @@ class Controller:
         self._own_write = 0.0
         self._relay = _Relay()
         self._relay.done.connect(self._title_found)
+        self._relay.update_ready.connect(self._update_ready)
+        self._relay.update_available.connect(self._update_available)
+        self._checking = False
+        self._pending_update: list[str] | None = None
         clipboard.changed.connect(self.on_clipboard_changed)
 
     # ---- startup ----
@@ -130,6 +142,76 @@ class Controller:
     def _title_found(self, item_id: int, title: str) -> None:
         db.set_title(self.con, item_id, title)
         self.refresh()
+
+    # ---- updates ----
+
+    # Say "updated" once after an update, drop old downloads and plan the checks
+    def start_updates(self) -> None:
+        old = updater.take_marker()
+        if old:
+            self.notify("Clipio was updated", f"Version {old} → {__version__}")
+        updater.clean_old()
+        QTimer.singleShot(UPDATE_FIRST_MS, self.check_updates)
+        self._update_timer = QTimer()
+        self._update_timer.timeout.connect(self.check_updates)
+        self._update_timer.start(UPDATE_EVERY_MS)
+
+    # Look for a newer release in the background (when automatic updates are on)
+    def check_updates(self) -> None:
+        if self._checking or self._pending_update or not config.load()["auto_update"]:
+            return
+        self._checking = True
+        threading.Thread(target=self._check_work, daemon=True).start()
+
+    # Background: check, and for the packaged app download and verify the update
+    def _check_work(self) -> None:
+        try:
+            from .setup.install import running_installed
+            update = updater.check()
+            if not update:
+                return
+            if not running_installed():
+                self._relay.update_available.emit(update.version)
+                return
+            installer = updater.download(update)
+            command = updater.prepare(installer) if installer else None
+            if command:
+                self._relay.update_ready.emit(update.version, command)
+        finally:
+            self._checking = False
+
+    # An update is downloaded: install it as soon as Clipio is not in use
+    def _update_ready(self, version: str, command: list) -> None:
+        self._pending_update = command
+        self._apply_update()
+
+    # Install the pending update now, or later when the panel is open or the paste queue is busy
+    def _apply_update(self) -> None:
+        if not self._pending_update:
+            return
+        if self.panel.shown or self.queue:
+            QTimer.singleShot(UPDATE_RETRY_MS, self._apply_update)
+            return
+        updater.apply(self._pending_update)   # the installer stops this Clipio and starts the new one
+
+    # Python installs cannot update themselves: say once per version that one exists
+    def _update_available(self, version: str) -> None:
+        seen = paths.data_dir() / "notified-version"
+        try:
+            if seen.read_text(encoding="utf-8").strip() == version:
+                return
+        except OSError:
+            pass
+        seen.write_text(version, encoding="utf-8")
+        self.notify("A new Clipio is available", f"Version {version} is out. Update with: pipx upgrade clipio")
+
+    # Small desktop notification (tray balloon, or notify-send on Linux without a tray)
+    def notify(self, title: str, text: str) -> None:
+        if self.tray and QSystemTrayIcon.supportsMessages():
+            self.tray.showMessage(title, text, QIcon(str(LOGO)), 6000)
+        elif sys.platform.startswith("linux") and shutil.which("notify-send"):
+            subprocess.Popen(["notify-send", "-a", "Clipio", "-i", str(LOGO), title, text],
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     # ---- panel ----
 
@@ -222,6 +304,9 @@ class Controller:
             return "ok"
         if cmd == "panel":
             return self.panel.report(arg.strip())
+        if cmd == "update":   # `clipio update`: look for a new version now
+            QTimer.singleShot(0, self.check_updates)
+            return "ok"
         return "unknown command"
 
     # Stop everything (the panel too) and leave the event loop
@@ -276,6 +361,7 @@ def run(argv: list[str] | None = None) -> int:
         print("clipio: no global shortcut on this desktop; bind `clipio toggle` "
               "in your desktop's keyboard settings.", file=sys.stderr)
     ctl.start_tray()
+    ctl.start_updates()
 
     timer = QTimer()
     timer.timeout.connect(ctl.housekeeping)

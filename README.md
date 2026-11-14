@@ -90,7 +90,7 @@ The buttons next to the search field pause recording, clear the history (after a
 
 ### Download (easiest)
 
-Go to the **[download page](https://ardazeybek.github.io/clipio/)**. It picks the right file for your computer. Open the file and press **Install**: Clipio copies itself into place, adds a menu entry, starts with your computer and opens. No Python or admin rights needed. Running a newer setup file later updates Clipio and keeps your history.
+Go to the **[download page](https://ardazeybek.github.io/clipio/)**. It picks the right file for your computer. Open the file and press **Install**: Clipio copies itself into place, adds a menu entry, starts with your computer and opens. No Python or admin rights needed. After that Clipio **updates itself**: when it starts (and once a day) it looks for a new version, downloads it, checks its checksum and installs it quietly while you are not using the panel. You get a small "Clipio was updated" note. Turn it off with *Settings → Features → Automatic updates*.
 
 | System | File | First run |
 | --- | --- | --- |
@@ -159,9 +159,10 @@ The first run creates `config.toml` in the settings folder. The retention period
 | `clean_links` | Remove tracking parameters from copied links | `true` |
 | `secret_minutes` | Minutes before copied passwords, keys and card numbers are deleted | `5` |
 | `link_titles` | Fetch page titles of copied links (sends a request to the site) | `false` |
+| `auto_update` | Install new versions by itself (Python installs only get a note) | `true` |
 | `panel_keep_minutes` | Minutes the closed panel stays loaded before it frees its memory (`0` = at once, `1440` = always ready) | `5` |
 
-Most settings can be changed in the panel instead: the gear button (or <kbd>Ctrl</kbd> + <kbd>,</kbd>) opens a settings page with an animated **How to** guide, **Shortcuts** (click a key and press the new one), **Features** (switch each feature on or off) and **Storage**. Shortcuts are saved as `key_paste`, `key_edit`… and features as `clean_links`, `detect_secrets`, `templates`, `code_colors`, `show_source`, `quick_numbers`, `link_titles`.
+Most settings can be changed in the panel instead: the gear button (or <kbd>Ctrl</kbd> + <kbd>,</kbd>) opens a settings page with an animated **How to** guide, **Shortcuts** (click a key and press the new one), **Features** (switch each feature on or off) and **Storage**. Shortcuts are saved as `key_paste`, `key_edit`… and features as `clean_links`, `detect_secrets`, `templates`, `code_colors`, `show_source`, `quick_numbers`, `auto_update`, `link_titles`.
 
 Run `clipio stop` and `clipio start` after editing the file.
 
@@ -176,6 +177,7 @@ clipio next             # paste the next item of the paste queue (bind it to a k
 clipio pause            # stop recording (clipio resume to continue)
 clipio retention 7      # keep items for 7 days and clean up now
 clipio autostart on     # start at login (off to undo)
+clipio update           # look for a new version now
 clipio status           # running state, whether the panel is loaded, item count, database path
 clipio stop             # quit Clipio
 ```

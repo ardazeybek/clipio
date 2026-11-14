@@ -18,6 +18,7 @@ USAGE = """usage: clipio <command>
   pin <id>          pin or unpin an item
   delete <id>       delete an item
   clear             delete every unpinned item
+  update            look for a new version now (installs it when automatic updates are on)
   pause|resume      pause or resume recording
   purge             apply the retention rules now
   retention <days>  keep items for 1-365 days and clean up now
@@ -29,7 +30,7 @@ USAGE = """usage: clipio <command>
   uninstall [--silent]  remove the packaged app (history and settings stay)
 """
 
-UI_COMMANDS = {"toggle", "show", "hide", "next"}
+UI_COMMANDS = {"toggle", "show", "hide", "next", "update"}
 ID_COMMANDS = {"pin", "delete"}
 
 
