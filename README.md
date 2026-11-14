@@ -1,108 +1,128 @@
 <div align="center">
-  <img src="clipio/ui/assets/clipio.svg" alt="Clipio logo" width="96" />
+  <img src="clipio/ui/assets/clipio.svg" alt="Clipio logo" width="104" />
   <h1>Clipio</h1>
-  <p><strong>Find and paste anything you copied earlier, with one shortcut.</strong></p>
-  <p>A paper-themed clipboard history for Windows, macOS and Linux that remembers your text, links, colors, code and images.</p>
+  <p><strong>📋 Find and paste anything you copied earlier, with one shortcut.</strong></p>
+  <p>A cozy, paper-themed clipboard history that remembers your text, links, colors, code and images.</p>
+
   <p>
-    <a href="https://github.com/ardazeybek/clipio/actions/workflows/ci.yml"><img src="https://github.com/ardazeybek/clipio/actions/workflows/ci.yml/badge.svg" alt="Test status" /></a>
-    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-E58F6F" alt="MIT license" /></a>
-    <img src="https://img.shields.io/badge/python-3.10%E2%80%933.14-9CC3A6" alt="Python 3.10 to 3.14" />
+    <img src="https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4?logo=windows&logoColor=white" alt="Windows 10 and 11" />
+    <img src="https://img.shields.io/badge/macOS-Apple%20Silicon%20%7C%20Intel-000000?logo=apple&logoColor=white" alt="macOS on Apple Silicon and Intel" />
+    <img src="https://img.shields.io/badge/Linux-X11%20%7C%20Wayland-FCC624?logo=linux&logoColor=black" alt="Linux on X11 and Wayland" />
   </p>
-  <p><a href="https://ardazeybek.github.io/clipio/"><strong>⬇ Download Clipio</strong></a></p>
-  <p><a href="#quick-start">Quick start</a> · <a href="#usage">Usage</a> · <a href="CONTRIBUTING.md">Contribute</a> · <a href="https://github.com/ardazeybek/clipio/discussions">Discussions</a> · <a href="mailto:quantastudio.dev@gmail.com">Contact</a></p>
+  <p>
+    <a href="https://github.com/ardazeybek/clipio/releases/latest"><img src="https://img.shields.io/github/v/release/ardazeybek/clipio?color=E58F6F&label=version" alt="Latest version" /></a>
+    <a href="https://github.com/ardazeybek/clipio/actions/workflows/ci.yml"><img src="https://github.com/ardazeybek/clipio/actions/workflows/ci.yml/badge.svg" alt="Test status" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-9CC3A6" alt="MIT license" /></a>
+    <img src="https://img.shields.io/badge/price-free-F3D9A4" alt="Free" />
+  </p>
+
+  <h3>
+    <a href="https://ardazeybek.github.io/clipio/">⬇️ Download Clipio</a>
+  </h3>
+
+  <p>
+    <a href="#-features">Features</a> ·
+    <a href="#-install">Install</a> ·
+    <a href="#%EF%B8%8F-shortcuts">Shortcuts</a> ·
+    <a href="#%EF%B8%8F-settings">Settings</a> ·
+    <a href="CONTRIBUTING.md">Contribute</a>
+  </p>
 </div>
 
 <p align="center">
   <img src="docs/assets/demo.gif" alt="Clipio opening, moving through the cards with the arrow keys, searching for git and for a color, then showing the settings page" width="456" />
 </p>
 
-<p align="center"><em>The real Clipio panel with sample data: open it, move with the arrow keys, type to search, change settings.</em></p>
+<p align="center"><em>The real Clipio panel: open it, move with the arrow keys, type to search, change settings.</em></p>
 
-## What is Clipio?
+---
 
-Clipio keeps a history of what you copy. Press the shortcut, pick an earlier item, and Clipio pastes it into the window you were using.
+## ✨ Why Clipio?
 
-It is made for people who copy the same things again and again and want a simple, good-looking way to get them back. Everything stays on your computer in a local SQLite database. Unpinned items are deleted automatically after the number of days you choose.
+- 🚀 **One shortcut** — press it, pick an earlier copy, and Clipio pastes it where you were typing.
+- 🎨 **Pleasant to look at** — a calm paper theme with note cards, tape and soft animations.
+- 🔒 **Private** — everything stays on your computer. Nothing is uploaded, ever.
+- 🪶 **Light** — only a tiny recorder runs in the background (about 25 MB); the window frees its memory when you are done.
+- 🔄 **Updates itself** — new versions install quietly while you are not using it.
+- 💻 **Everywhere** — the same app on Windows, macOS and Linux.
 
-Clipio runs on **Windows 10/11, macOS and Linux** (X11 and Wayland). It is written in Python with a Qt Quick interface through PySide6.
+## 💻 Works on
 
-### Light on memory
+| System | Versions | Opens with | Automatic paste |
+| :--- | :--- | :---: | :---: |
+| 🪟 **Windows** | 10 and 11 | <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>V</kbd> | ✅ |
+| 🍎 **macOS** | Apple Silicon and Intel | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>V</kbd> | ✅ |
+| 🐧 **Linux X11** | any desktop | <kbd>Super</kbd> <kbd>V</kbd> | ✅ |
+| 🐧 **Linux Wayland** | Hyprland, Sway, KDE, GNOME | a key you choose (see *Linux Wayland* below) | ✅ (GNOME: copy only) |
 
-A clipboard history has to keep running to notice what you copy, so Clipio is split in two:
+## 🌟 Features
 
-| Part | When it runs | Memory |
-| --- | --- | --- |
-| **Recorder** — watches the clipboard, saves items, pastes, hotkey, tray | always, in the background | about 25 MB of its own on Linux (≈ 85 MB counting the Python and Qt libraries it shares) |
-| **Panel** — the window you see | only while you use it, plus 5 minutes after you close it | freed completely when it quits |
+### 📋 Everyday
+| | Feature | What it does |
+| :---: | :--- | :--- |
+| ⚡ | **Quick paste** | Pick a card with <kbd>Enter</kbd> or a click; Clipio closes and pastes it. |
+| 🔍 | **Search and tabs** | Type to filter; switch between *All*, *Text*, *Images* and *Pinned*. |
+| 📌 | **Pins and folders** | Pinned items never expire. Group them into folders. |
+| 🔢 | **Alt + number** | <kbd>Alt</kbd> + <kbd>1</kbd>…<kbd>9</kbd> pastes one of the first nine cards at once. |
+| 📚 | **Paste queue** | Mark several cards and paste them one after another. |
 
-Before 0.3 the whole app, window included, stayed loaded all the time (≈ 420 MB on Linux). Now the panel quits on its own once you stop using it, and the first open after that takes about a second. You choose the trade-off under *Settings → Storage → Keep the panel ready after closing*: free at once, 1, 5 or 30 minutes, or always.
+### 🧠 Smart cards
+| | Feature | What it does |
+| :---: | :--- | :--- |
+| 🎨 | **Colors** | A swatch, plus the other notation (HEX ↔ RGB). |
+| 💻 | **Code** | Colored like in your editor. |
+| 🔗 | **Links** | Tracking bits (`utm_…`, `fbclid`…) removed; page titles if you want them. |
+| 🖼️ | **Images** | Thumbnails, and text read from them (OCR, needs `tesseract`). |
+| 🏷️ | **Source app** | Every card shows where it came from; type `@firefox` to filter. |
+| ✏️ | **Edit and convert** | Edit before pasting, or change case, JSON, Base64, URL encoding. |
+| 🧩 | **Templates** | Pinned snippets fill in `{date}`, `{time}`, `{weekday}`, `{clipboard}`… |
 
-## Features
+### 🔒 Privacy
+| | Feature | What it does |
+| :---: | :--- | :--- |
+| 🙈 | **Secrets hide themselves** | Passwords, API keys and card numbers show as dots and vanish after a few minutes. |
+| 🚫 | **Ignored apps** | Password managers are always skipped; add any app you like. |
+| ⏸️ | **Pause** | Stop recording with one click. |
+| 🧹 | **Auto cleanup** | Items older than 1–30 days (your choice) are deleted. |
+| 🏠 | **Local only** | A small SQLite database on your own disk. |
 
-- **One-shortcut history** — Open the panel, choose an item and it is pasted into the app you were using.
-- **Readable cards** — Links, colors, code and images each get their own card, so you can recognise an item at a glance.
-- **Search and tabs** — Type to filter, or switch between All, Text, Images and Pinned.
-- **Pins that stay** — Pin the things you reuse. Pinned items are never deleted automatically or by *Clear*.
-- **Automatic cleanup** — Choose how long items are kept (1, 3, 7, 14 or 30 days) in the settings window.
-- **Privacy controls** — Pause recording at any time, list apps whose copies are never saved, and copies that password managers mark as secret are skipped. Password manager apps are always skipped.
-- **Secrets hide themselves** — Passwords, API keys, tokens and card numbers are shown as dots and deleted after a few minutes.
-- **Clean links** — Tracking parameters (`utm_…`, `fbclid`, `gclid`…) are removed from copied links. *Paste cleaned* also tidies spaces.
-- **Paste queue** — Mark several cards and paste them one after another.
-- **Card menu** — Right-click a card to edit it before pasting, convert it (UPPER/lower case, JSON, Base64, URL, HEX ↔ RGB), put it in a folder, read text from an image (OCR, needs `tesseract`) or stop saving copies from its app.
-- **Folders and templates** — Pinned items can live in folders. Pinned snippets with `{date}`, `{time}`, `{datetime}`, `{weekday}` or `{clipboard}` are filled in when pasted.
-- **Small in the background** — Only a light recorder stays running; the panel frees its memory when you are done (see [Light on memory](#light-on-memory)).
-- **Smart cards** — Colors show both notations, code is colored, links can show their page title, and every card shows the app it came from. Type `@firefox` to filter by app.
+## 📥 Install
 
-## Usage
+### The easy way (recommended)
 
-1. Copy something in any app as usual.
-2. Press the shortcut. The panel opens in the middle of the screen.
-3. Type to search, or use the arrow keys to move between cards.
-4. Press <kbd>Enter</kbd> or click a card. Clipio closes and pastes it.
+1. Open the **[download page](https://ardazeybek.github.io/clipio/)** — it picks the right file for your computer.
+2. Open the file and press **Install**.
+3. That's it! 🎉 Clipio starts now and every time you turn on your computer.
 
-| Desktop | Default shortcut |
-| --- | --- |
-| Windows | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd> |
-| macOS | <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>V</kbd> |
-| Linux X11 | <kbd>Super</kbd> + <kbd>V</kbd> |
-| Linux Wayland | none built in: bind `clipio toggle` yourself (see [Wayland](#wayland)) |
+No Python, no terminal, no admin rights.
 
-Inside the panel:
+| System | File | First time only |
+| :--- | :--- | :--- |
+| 🪟 Windows | `Clipio-Setup.exe` | If SmartScreen appears: **More info → Run anyway** |
+| 🍎 macOS | `Clipio-macOS-AppleSilicon.dmg` or `…-Intel.dmg` | Right-click Clipio → **Open**; allow it under *Privacy & Security → Accessibility* |
+| 🐧 Linux | `Clipio-Setup-Linux` | Or paste this into a terminal 👇 |
 
-| Key | Action |
-| --- | --- |
-| <kbd>↑</kbd> <kbd>↓</kbd> · <kbd>PgUp</kbd> <kbd>PgDn</kbd> | Move the selection |
-| <kbd>Enter</kbd> · left click | Paste the selected item |
-| <kbd>Shift</kbd> + <kbd>Enter</kbd> | Paste it cleaned (no tracking, tidy spaces) |
-| <kbd>Ctrl</kbd> + <kbd>C</kbd> | Copy it without pasting |
-| right click · <kbd>Ctrl</kbd> + <kbd>M</kbd> | Card menu (edit, convert, folder, OCR…) |
-| <kbd>Ctrl</kbd> + <kbd>E</kbd> | Edit, then paste |
-| <kbd>Ctrl</kbd> + click · <kbd>Ctrl</kbd> + <kbd>Space</kbd> | Add to the paste queue; <kbd>Enter</kbd> pastes the first, `clipio next` the rest |
-| <kbd>Alt</kbd> + <kbd>1</kbd>–<kbd>9</kbd> | Paste one of the first nine items (hold <kbd>Alt</kbd> to see the numbers) |
-| <kbd>Ctrl</kbd> + <kbd>P</kbd> (<kbd>⌘</kbd> + <kbd>P</kbd> on macOS) | Pin or unpin |
-| <kbd>Del</kbd> | Delete the selected item |
-| <kbd>Tab</kbd> · <kbd>Shift</kbd> + <kbd>Tab</kbd> | Next or previous tab |
-| <kbd>Esc</kbd> | Clear the search, then close |
+```bash
+curl -fsSL https://github.com/ardazeybek/clipio/releases/latest/download/install.sh | sh
+```
 
-The buttons next to the search field pause recording, clear the history (after a confirmation) and open the settings. Drag the panel by any empty spot. Clicking outside it closes it. On Windows and macOS, Clipio also has a tray or menu-bar icon with *Pause recording*, *Start at login* and *Quit*.
+### 🔄 Updates
 
-## Quick start
+Clipio looks for a new version when it starts and once a day. It downloads it, checks it against a checksum, and installs it quietly while the panel is closed. You'll see a small *"Clipio was updated"* note. Turn it off in **Settings → Features → Automatic updates**, or check right away with `clipio update`.
 
-### Download (easiest)
+### 🗑️ Uninstall
 
-Go to the **[download page](https://ardazeybek.github.io/clipio/)**. It picks the right file for your computer. Open the file and press **Install**: Clipio copies itself into place, adds a menu entry, starts with your computer and opens. No Python or admin rights needed. After that Clipio **updates itself**: when it starts (and once a day) it looks for a new version, downloads it, checks its checksum and installs it quietly while you are not using the panel. You get a small "Clipio was updated" note. Turn it off with *Settings → Features → Automatic updates*.
+| System | How |
+| :--- | :--- |
+| 🪟 Windows | **Settings → Apps → Clipio → Uninstall** |
+| 🍎 macOS / 🐧 Linux | run `clipio uninstall` |
 
-| System | File | First run |
-| --- | --- | --- |
-| Windows 10/11 | `Clipio-Setup.exe` | If SmartScreen appears: *More info → Run anyway* |
-| macOS (Apple Silicon / Intel) | `Clipio-macOS-AppleSilicon.dmg` / `Clipio-macOS-Intel.dmg` | Right-click Clipio → *Open* (the app is not notarized) |
-| Linux | `Clipio-Setup-Linux` | Or run `curl -fsSL https://github.com/ardazeybek/clipio/releases/latest/download/install.sh \| sh` |
+Your history and settings are kept, in case you come back.
 
-To remove it: Windows *Settings → Apps*; macOS and Linux `clipio uninstall`. Your history and settings stay.
+<details>
+<summary><b>🐍 Install with Python (for developers)</b></summary>
 
-### Install with Python (for developers)
-
-Requirements: Python 3.10 to 3.14; on Linux, `wl-clipboard` on Wayland or `xdotool` on X11.
+Needs Python 3.10–3.14. On Linux also `wl-clipboard` (Wayland) or `xdotool` (X11).
 
 ```bash
 pipx install git+https://github.com/ardazeybek/clipio.git
@@ -110,120 +130,167 @@ clipio start
 clipio autostart on
 ```
 
-`clipio start` runs Clipio in the background. Copy something, press the shortcut, and the panel opens.
+Python installs don't update themselves; Clipio tells you when a new version is out (`pipx upgrade clipio`).
 
-### Permissions on macOS
+</details>
 
-macOS asks for two permissions the first time:
+## ⌨️ Shortcuts
 
-- **Input Monitoring** for the global shortcut.
-- **Accessibility** for pasting into other apps.
+**How it works:** copy as usual → press the shortcut → pick a card → it's pasted. ✨
 
-Allow both for the terminal or Python that runs Clipio under *System Settings → Privacy & Security*, then run `clipio stop` and `clipio start` again. Without Accessibility, picking an item still copies it, and you paste with <kbd>⌘</kbd> + <kbd>V</kbd>.
+| Key | Action |
+| :--- | :--- |
+| <kbd>↑</kbd> <kbd>↓</kbd> · <kbd>PgUp</kbd> <kbd>PgDn</kbd> | Move |
+| <kbd>Enter</kbd> · click | Paste |
+| <kbd>Shift</kbd> + <kbd>Enter</kbd> | Paste cleaned (no tracking, tidy spaces) |
+| <kbd>Ctrl</kbd> + <kbd>C</kbd> | Copy only |
+| <kbd>Ctrl</kbd> + <kbd>E</kbd> | Edit, then paste |
+| <kbd>Ctrl</kbd> + <kbd>M</kbd> · right click | Card menu |
+| <kbd>Ctrl</kbd> + <kbd>P</kbd> | Pin or unpin |
+| <kbd>Ctrl</kbd> + <kbd>Space</kbd> · <kbd>Ctrl</kbd> + click | Add to the paste queue |
+| <kbd>Alt</kbd> + <kbd>1</kbd>…<kbd>9</kbd> | Paste one of the first nine |
+| <kbd>Del</kbd> | Delete |
+| <kbd>Tab</kbd> · <kbd>Shift</kbd> + <kbd>Tab</kbd> | Next / previous tab |
+| <kbd>Esc</kbd> | Clear the search, then close |
+| <kbd>Ctrl</kbd> + <kbd>,</kbd> | Settings |
 
-### Wayland
+Every in-panel shortcut can be changed in **Settings → Shortcuts**. Clicking outside the panel closes it.
 
-Wayland does not let apps register global shortcuts, so bind `clipio toggle` in your desktop:
+## ⚙️ Settings
 
-- **Hyprland** (`hyprland.conf`):
-  ```ini
-  exec-once = clipio start
-  bind = SUPER, V, exec, clipio toggle
-  ```
-  On Hyprland, Clipio adds a window rule for itself while it runs, so the panel floats in the middle without borders or blur.
-- **Sway**: `bindsym $mod+v exec clipio toggle`
-- **GNOME and KDE**: add a custom keyboard shortcut in *Settings* with the command `clipio toggle`.
+Open them with the ⚙️ button or <kbd>Ctrl</kbd> + <kbd>,</kbd>:
 
-Automatic pasting needs a compositor that accepts simulated keys. It works on Hyprland, and with [`wtype`](https://github.com/atx/wtype) on Sway and other wlroots compositors. On GNOME, Clipio watches the clipboard through XWayland and only copies the item, so you paste with <kbd>Ctrl</kbd> + <kbd>V</kbd>.
-
-### Settings
-
-The first run creates `config.toml` in the settings folder. The retention period can also be changed in the panel's settings window.
-
-| System | Settings file | History |
-| --- | --- | --- |
-| Windows | `%APPDATA%\clipio\config.toml` | `%LOCALAPPDATA%\clipio\` |
-| macOS | `~/Library/Application Support/clipio/config.toml` | `~/Library/Application Support/clipio/` |
-| Linux | `~/.config/clipio/config.toml` | `~/.local/share/clipio/` |
-
-| Setting | What it does | Default |
-| --- | --- | --- |
-| `retention_days` | Days before unpinned items are deleted | `14` |
-| `max_items` | Maximum number of stored items | `500` |
-| `max_text_kb` | Larger texts are not saved | `1024` |
-| `max_image_mb` | Larger images are not saved | `25` |
-| `max_images_total_mb` | Total size limit for all images | `1024` |
-| `persist` | Put the last item back when the source app empties the clipboard | `true` |
-| `hotkey` | Global shortcut, e.g. `"ctrl+alt+v"` | see the table above |
-| `ignore_apps` | Apps whose copies are never saved, e.g. `["KeePassXC", "1Password"]` | `[]` |
-| `clean_links` | Remove tracking parameters from copied links | `true` |
-| `secret_minutes` | Minutes before copied passwords, keys and card numbers are deleted | `5` |
-| `link_titles` | Fetch page titles of copied links (sends a request to the site) | `false` |
-| `auto_update` | Install new versions by itself (Python installs only get a note) | `true` |
-| `panel_keep_minutes` | Minutes the closed panel stays loaded before it frees its memory (`0` = at once, `1440` = always ready) | `5` |
-
-Most settings can be changed in the panel instead: the gear button (or <kbd>Ctrl</kbd> + <kbd>,</kbd>) opens a settings page with an animated **How to** guide, **Shortcuts** (click a key and press the new one), **Features** (switch each feature on or off) and **Storage**. Shortcuts are saved as `key_paste`, `key_edit`… and features as `clean_links`, `detect_secrets`, `templates`, `code_colors`, `show_source`, `quick_numbers`, `auto_update`, `link_titles`.
-
-Run `clipio stop` and `clipio start` after editing the file.
-
-### Command line
-
-`clipio help` lists every command. The most useful ones:
-
-```bash
-clipio start            # start Clipio in the background
-clipio toggle           # open or close the panel
-clipio next             # paste the next item of the paste queue (bind it to a key)
-clipio pause            # stop recording (clipio resume to continue)
-clipio retention 7      # keep items for 7 days and clean up now
-clipio autostart on     # start at login (off to undo)
-clipio update           # look for a new version now
-clipio status           # running state, whether the panel is loaded, item count, database path
-clipio stop             # quit Clipio
-```
-
-### Run from source
-
-```bash
-git clone https://github.com/ardazeybek/clipio.git
-cd clipio
-python -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install -e ".[test]"
-clipio run                         # runs the service in this terminal; Ctrl+C stops it
-```
-
-## How it works
-
-| Part | Role |
-| --- | --- |
-| `clipio/core/` | Classifies items, stores them in SQLite and applies the limits. No operating-system code. |
-| `clipio/system/` | One small backend per platform: clipboard, paste keystroke, global shortcut, start at login. |
-| `clipio/app.py` | The background service: watches the clipboard, pastes, answers `clipio` commands over a local socket. |
-| `clipio/panel.py` | The panel process: started when you open the panel, quits by itself when unused. |
-| `clipio/ui/` | The panel, written in QML (Qt Quick). |
-
-[MAP.md](MAP.md) describes the full architecture, including which backend each system uses. Each folder has its own `README.md` that explains its files.
+| Tab | What's inside |
+| :--- | :--- |
+| 📖 **How to** | A small animated guide for each feature |
+| ⌨️ **Shortcuts** | Click a key, press the new one |
+| 🎛️ **Features** | Switch each feature on or off |
+| 💾 **Storage** | How long items are kept, how long the closed panel stays ready, ignored apps |
 
 <p align="center">
-  <img src="docs/assets/settings.png" alt="The Clipio settings page on the Storage tab: how long copies are kept and how long the closed panel stays ready" width="400" />
+  <img src="docs/assets/settings.png" alt="The Clipio settings page on the Storage tab" width="400" />
 </p>
 
-The test suite runs on Windows, macOS and Linux with every supported Python version on each push, including an end-to-end test that starts the real service and panel processes ([tests workflow](https://github.com/ardazeybek/clipio/actions/workflows/ci.yml)).
+<details>
+<summary><b>📄 Settings file (config.toml)</b></summary>
 
-## Contributing
+| System | Settings file | History |
+| :--- | :--- | :--- |
+| 🪟 Windows | `%APPDATA%\clipio\config.toml` | `%LOCALAPPDATA%\clipio\` |
+| 🍎 macOS | `~/Library/Application Support/clipio/config.toml` | same folder |
+| 🐧 Linux | `~/.config/clipio/config.toml` | `~/.local/share/clipio/` |
 
-Bug reports, testing on other desktops, documentation fixes and design ideas are all welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
+| Setting | What it does | Default |
+| :--- | :--- | :--- |
+| `retention_days` | Days before unpinned items are deleted | `14` |
+| `max_items` | Most items to keep | `500` |
+| `max_text_kb` / `max_image_mb` | Larger texts / images are not saved | `1024` / `25` |
+| `max_images_total_mb` | Total size limit for images | `1024` |
+| `persist` | Put the last item back when the source app empties the clipboard | `true` |
+| `hotkey` | Global shortcut, e.g. `"ctrl+alt+v"` | per system |
+| `ignore_apps` | Apps never recorded, e.g. `["KeePassXC"]` | `[]` |
+| `clean_links` | Remove tracking parameters from links | `true` |
+| `secret_minutes` | Minutes before secrets are deleted | `5` |
+| `link_titles` | Fetch page titles of links (visits the site) | `false` |
+| `auto_update` | Install new versions by itself | `true` |
+| `panel_keep_minutes` | Minutes the closed panel stays ready (`0` = free at once, `1440` = always) | `5` |
 
-## Support and contact
+Run `clipio stop` and `clipio start` after editing the file by hand.
 
-- **Bugs and feature requests:** [GitHub Issues](https://github.com/ardazeybek/clipio/issues)
-- **Other questions:** [quantastudio.dev@gmail.com](mailto:quantastudio.dev@gmail.com)
+</details>
 
-## License
+<details>
+<summary><b>🐧 Linux Wayland</b></summary>
 
-Clipio is released under the [MIT License](LICENSE).
+Wayland doesn't let apps grab global shortcuts, so bind `clipio toggle` to a key yourself:
+
+| Desktop | How |
+| :--- | :--- |
+| **Hyprland** | `bind = SUPER, V, exec, clipio toggle` in `hyprland.conf` |
+| **Sway** | `bindsym $mod+v exec clipio toggle` |
+| **GNOME / KDE** | *Settings → Keyboard → Custom shortcut* with the command `clipio toggle` |
+
+Pasting works on Hyprland out of the box and with [`wtype`](https://github.com/atx/wtype) on Sway and other wlroots desktops (the installer fetches it). On GNOME, Clipio copies the item and you paste with <kbd>Ctrl</kbd> + <kbd>V</kbd>.
+
+</details>
+
+<details>
+<summary><b>🍎 macOS permissions</b></summary>
+
+macOS asks once for:
+
+- **Accessibility** — so Clipio can paste into other apps.
+- **Input Monitoring** — for the global shortcut.
+
+Allow Clipio under *System Settings → Privacy & Security*. Without Accessibility, picking an item still copies it and you paste with <kbd>⌘</kbd> + <kbd>V</kbd>.
+
+</details>
+
+<details>
+<summary><b>⌨️ Command line</b></summary>
+
+`clipio help` lists everything. The handy ones:
+
+```bash
+clipio toggle           # open or close the panel
+clipio next             # paste the next item of the paste queue
+clipio pause            # stop recording (clipio resume to continue)
+clipio retention 7      # keep items for 7 days
+clipio update           # look for a new version now
+clipio status           # is it running, how many items
+clipio start / stop     # start or quit Clipio
+clipio uninstall        # remove the app (history stays)
+```
+
+</details>
+
+<details>
+<summary><b>🛠️ How it works (for developers)</b></summary>
+
+Clipio is two small processes written in Python with a Qt Quick (QML) interface through PySide6:
+
+| Part | When it runs | Memory |
+| :--- | :--- | :--- |
+| 🎙️ **Recorder** — clipboard, saving, pasting, hotkey, tray, updates | always | ≈ 25 MB of its own |
+| 🪟 **Panel** — the window you see | while you use it, plus a few minutes | freed completely when it quits |
+
+| Folder | Role |
+| :--- | :--- |
+| `clipio/core/` | Classifies and stores items (SQLite), applies limits — no OS code |
+| `clipio/system/` | One small backend per platform: clipboard, paste, hotkey, autostart, updates |
+| `clipio/setup/` | The installer of the ready-made app |
+| `clipio/ui/` | The panel and setup windows in QML |
+| `packaging/` | Builds the installers (PyInstaller) on every release |
+
+Run it from source:
+
+```bash
+git clone https://github.com/ardazeybek/clipio.git && cd clipio
+python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -e ".[test]"
+clipio run                                          # Ctrl+C stops it
+```
+
+[MAP.md](MAP.md) maps the whole architecture; every folder has its own `README.md`. The tests run on Windows, macOS and Linux with Python 3.10–3.14 on every push.
+
+</details>
+
+## 🤝 Contributing
+
+Bug reports, testing on other desktops, translations, docs and design ideas are all welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## 💬 Support
+
+| | |
+| :--- | :--- |
+| 🐞 Bugs and ideas | [GitHub Issues](https://github.com/ardazeybek/clipio/issues) |
+| 💭 Questions and chat | [Discussions](https://github.com/ardazeybek/clipio/discussions) |
+| ✉️ Anything else | [quantastudio.dev@gmail.com](mailto:quantastudio.dev@gmail.com) |
+
+## 📜 License
+
+Free and open source under the [MIT License](LICENSE).
 
 ---
 
-<p align="center">If Clipio saves you time, a star on GitHub helps other people find it.</p>
+<p align="center">⭐ If Clipio saves you time, a star on GitHub helps other people find it.</p>
