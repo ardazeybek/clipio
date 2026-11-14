@@ -60,44 +60,25 @@
 
 ## 🌟 Features
 
-### Everyday
-| Feature | What it does |
-| :--- | :--- |
-| **Quick paste** | Pick a card with <kbd>Enter</kbd> or a click; Clipio closes and pastes it. |
-| **Search and tabs** | Type to filter; switch between *All*, *Text*, *Images* and *Pinned*. |
-| **Pins and folders** | Pinned items never expire. Group them into folders. |
-| **Alt + number** | <kbd>Alt</kbd> + <kbd>1</kbd>…<kbd>9</kbd> pastes one of the first nine cards at once. |
-| **Paste queue** | Mark several cards and paste them one after another. |
+<p align="center">
+  <img src="docs/assets/art/features-everyday.svg" width="760" alt="Everyday: quick paste with Enter or a click; search and tabs; pins and folders that never expire; Alt + 1 to 9 pastes one of the first nine; a paste queue." />
+</p>
 
-### Smart cards
-| Feature | What it does |
-| :--- | :--- |
-| **Colors** | A swatch, plus the other notation (HEX RGB). |
-| **Code** | Colored like in your editor. |
-| **Links** | Tracking bits (`utm_…`, `fbclid`…) removed; page titles if you want them. |
-| **Images** | Thumbnails, and text read from them (OCR, needs `tesseract`). |
-| **Source app** | Every card shows where it came from; type `@firefox` to filter. |
-| **Edit and convert** | Edit before pasting, or change case, JSON, Base64, URL encoding. |
-| **Templates** | Pinned snippets fill in `{date}`, `{time}`, `{weekday}`, `{clipboard}`… |
+<p align="center">
+  <img src="docs/assets/art/features-smart.svg" width="760" alt="Smart cards: color swatches with HEX and RGB; colored code; clean links with optional page titles; image thumbnails and OCR (needs tesseract); the source app on each card, @app filters; edit and convert (case, JSON, Base64, URL); templates like {date}, {time}, {clipboard}." />
+</p>
 
-### Privacy
-| Feature | What it does |
-| :--- | :--- |
-| **Secrets hide themselves** | Passwords, API keys and card numbers show as dots and vanish after a few minutes. |
-| **Ignored apps** | Password managers are always skipped; add any app you like. |
-| **Pause** | Stop recording with one click. |
-| **Auto cleanup** | Items older than 1–30 days (your choice) are deleted. |
-| **Local only** | A small SQLite database on your own disk. |
+<p align="center">
+  <img src="docs/assets/art/features-privacy.svg" width="760" alt="Privacy: passwords, keys and card numbers are hidden and deleted after a few minutes; password managers and apps you choose are never recorded; pause with one click; old items are deleted after 1 to 30 days; everything stays in a small local database." />
+</p>
 
 ## 📥 Install
 
 ### The easy way (recommended)
 
-1. Open the **[download page](https://ardazeybek.github.io/clipio/)** — it picks the right file for your computer.
-2. Open the file and press **Install**.
-3. That's it! Clipio starts now and every time you turn on your computer.
-
-No Python, no terminal, no admin rights.
+<p align="center">
+  <a href="https://ardazeybek.github.io/clipio/"><img src="docs/assets/art/install.svg" width="760" alt="1. Download: the download page picks your system. 2. Open the file and press Install, no Python or admin rights needed. 3. That is it: Clipio starts now and with your computer." /></a>
+</p>
 
 | System | File | First time only |
 | :--- | :--- | :--- |
@@ -163,14 +144,11 @@ Every in-panel shortcut can be changed in **Settings → Shortcuts**. Clicking o
 
 ## ⚙️ Settings
 
-Open them with the button or <kbd>Ctrl</kbd> + <kbd>,</kbd>:
+Open them with the gear button or <kbd>Ctrl</kbd> + <kbd>,</kbd>:
 
-| Tab | What's inside |
-| :--- | :--- |
-| **How to** | A small animated guide for each feature |
-| **Shortcuts** | Click a key, press the new one |
-| **Features** | Switch each feature on or off |
-| **Storage** | How long items are kept, how long the closed panel stays ready, ignored apps |
+<p align="center">
+  <img src="docs/assets/art/settings-tabs.svg" width="760" alt="Settings tabs: How to, an animated guide per feature; Shortcuts, click a key and press the new one; Features, switch each one on or off; Storage, how long items are kept, how long the closed panel stays ready and ignored apps." />
+</p>
 
 <p align="center">
   <img src="docs/assets/settings.png" alt="The Clipio settings page on the Storage tab" width="400" />
@@ -286,11 +264,11 @@ Bug reports, testing on other desktops, translations, docs and design ideas are 
 
 ## 💬 Support
 
-| | |
-| :--- | :--- |
-| Bugs and ideas | [GitHub Issues](https://github.com/ardazeybek/clipio/issues) |
-| Questions and chat | [Discussions](https://github.com/ardazeybek/clipio/discussions) |
-| Anything else | [quantastudio.dev@gmail.com](mailto:quantastudio.dev@gmail.com) |
+<p align="center">
+  <a href="https://github.com/ardazeybek/clipio/issues"><img src="docs/assets/art/support-issues.svg" width="240" alt="Bugs and ideas: GitHub Issues" /></a>
+  <a href="https://github.com/ardazeybek/clipio/discussions"><img src="docs/assets/art/support-discussions.svg" width="240" alt="Questions: GitHub Discussions" /></a>
+  <a href="mailto:quantastudio.dev@gmail.com"><img src="docs/assets/art/support-mail.svg" width="240" alt="Anything else: send an email" /></a>
+</p>
 
 ## 📜 License
 
