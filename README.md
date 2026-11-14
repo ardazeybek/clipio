@@ -39,14 +39,17 @@
 
 ## ✨ Why Clipio?
 
-- **One shortcut** — press it, pick an earlier copy, and Clipio pastes it where you were typing.
-- **Pleasant to look at** — a calm paper theme with note cards, tape and soft animations.
-- **Private** — everything stays on your computer. Nothing is uploaded, ever.
-- **Light** — only a tiny recorder runs in the background (about 25 MB); the window frees its memory when you are done.
-- **Updates itself** — new versions install quietly while you are not using it.
-- **Everywhere** — the same app on Windows, macOS and Linux.
+<p align="center">
+  <img src="docs/assets/art/highlights.svg" width="760" alt="One shortcut: pick a copy and it is pasted. Lovely to look at: a calm paper theme. Private: everything stays on your computer. Light: about 25 MB in the background. Updates itself, quietly. Everywhere: Windows, macOS and Linux." />
+</p>
 
 ## 💻 Works on
+
+<p align="center">
+  <a href="https://github.com/ardazeybek/clipio/releases/latest/download/Clipio-Setup.exe"><img src="docs/assets/art/os-windows.svg" width="220" alt="Download for Windows 10 and 11" /></a>
+  <a href="https://ardazeybek.github.io/clipio/"><img src="docs/assets/art/os-macos.svg" width="220" alt="Download for macOS, Apple Silicon and Intel" /></a>
+  <a href="https://ardazeybek.github.io/clipio/"><img src="docs/assets/art/os-linux.svg" width="220" alt="Download for Linux, X11 and Wayland" /></a>
+</p>
 
 | System | Versions | Opens with | Automatic paste |
 | :--- | :--- | :---: | :---: |
@@ -136,7 +139,9 @@ Python installs don't update themselves; Clipio tells you when a new version is 
 
 ## ⌨️ Shortcuts
 
-**How it works:** copy as usual → press the shortcut → pick a card → it's pasted.
+<p align="center">
+  <img src="docs/assets/art/steps.svg" width="760" alt="1. Copy as usual: Clipio keeps every copy. 2. Press the shortcut, then search or pick a card. 3. It is pasted right where you were typing." />
+</p>
 
 | Key | Action |
 | :--- | :--- |

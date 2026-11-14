@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="168" viewBox="0 0 220 168">
+  <!-- Linux download card for the README: a note sheet on a paper stack, with tape -->
+  <rect x="12" y="16" width="200" height="144" rx="16" fill="#E9DFCB"/>
+  <rect x="6" y="10" width="200" height="144" rx="16" fill="#FFFCF5" stroke="#E4D8C2" stroke-width="2"/>
+  <rect x="84" y="2" width="46" height="16" rx="2" fill="#E58F6F" opacity="0.92" transform="rotate(-2 107 10)"/>
+  <!-- icon -->
+  <g transform="translate(106 54)"><ellipse cx="0" cy="2" rx="17" ry="21" fill="#3D3530"/>
+    <ellipse cx="0" cy="7" rx="11" ry="14" fill="#FFFCF5"/>
+    <circle cx="-5" cy="-9" r="3.2" fill="#FFFCF5"/><circle cx="5" cy="-9" r="3.2" fill="#FFFCF5"/>
+    <circle cx="-4.4" cy="-8.6" r="1.5" fill="#3D3530"/><circle cx="4.4" cy="-8.6" r="1.5" fill="#3D3530"/>
+    <path d="M-5 -3 q5 5 10 0 q-5 -3 -10 0 z" fill="#F3D9A4" stroke="#D9B26A" stroke-width="1"/>
+    <ellipse cx="-8" cy="22" rx="7" ry="3.5" fill="#F3D9A4"/><ellipse cx="8" cy="22" rx="7" ry="3.5" fill="#F3D9A4"/>
+    <path d="M-16 0 q-6 10 -1 18" fill="none" stroke="#3D3530" stroke-width="5" stroke-linecap="round"/>
+    <path d="M16 0 q6 10 1 18" fill="none" stroke="#3D3530" stroke-width="5" stroke-linecap="round"/></g>
+  <text x="106" y="104" text-anchor="middle" fill="#3D3530" font-family="Nunito, 'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="800">Linux</text>
+  <text x="106" y="121" text-anchor="middle" fill="#9A8E7E" font-family="Nunito, 'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="600">X11 · Wayland</text>
+  <!-- download pill -->
+  <rect x="67" y="130" width="78" height="16" rx="8" fill="#E58F6F"/>
+  <g fill="none" stroke="#FFFCF5" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M80 134 v6"/><path d="M77.5 137.5 l2.5 2.5 l2.5 -2.5"/><path d="M76 142 h8"/>
+  </g>
+  <text x="89" y="141.5" fill="#FFFCF5" font-family="Nunito, 'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="9.5" font-weight="800" letter-spacing="0.3">Download</text>
+</svg>
