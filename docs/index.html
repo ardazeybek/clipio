@@ -1,0 +1,140 @@
+<!doctype html>
+<!-- Clipio download page (GitHub Pages): finds the visitor's system and offers the matching installer. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Download Clipio</title>
+<meta name="description" content="Clipio — a cozy, paper-themed clipboard history for Windows, macOS and Linux.">
+<link rel="icon" href="https://raw.githubusercontent.com/ardazeybek/clipio/main/clipio/ui/assets/clipio.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F6EFE1; --sheet: #FFFCF5; --edge: #E4D8C2; --stack: #E9DFCB;
+    --ink: #3D3530; --pencil: #8A7E6E; --accent: #E58F6F; --tape: #F3D9A4; --sage: #9CC3A6;
+    --ease: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 32px 16px;
+    font-family: Nunito, "Segoe UI", system-ui, sans-serif; color: var(--ink);
+    background: var(--paper)
+      repeating-linear-gradient(transparent 0 31px, rgba(154,142,126,.13) 31px 32px);
+  }
+  main {
+    position: relative; width: min(520px, 100%); background: var(--sheet); border: 1px solid var(--edge);
+    border-radius: 22px; padding: 44px 36px 32px; text-align: center;
+    box-shadow: 6px 8px 0 var(--stack), 0 18px 40px rgba(92,69,41,.16);
+    animation: rise .6s var(--ease) both;
+  }
+  main::before {   /* mustard tape */
+    content: ""; position: absolute; top: -12px; left: 50%; width: 110px; height: 26px; margin-left: -55px;
+    background: var(--tape); opacity: .92; border-radius: 3px; transform: rotate(-3deg);
+  }
+  .logo { width: 108px; height: 108px; animation: drop .7s .1s var(--ease) both; }
+  h1 { font-size: 34px; margin: 10px 0 4px; font-weight: 800; }
+  .lead { color: var(--pencil); margin: 0 0 28px; font-size: 17px; }
+  .big {
+    display: inline-flex; align-items: center; gap: 10px; padding: 15px 28px; border-radius: 14px;
+    background: var(--accent); color: var(--sheet); font-weight: 800; font-size: 18px; text-decoration: none;
+    box-shadow: 0 4px 0 #c97556; transition: transform .15s var(--ease), box-shadow .15s var(--ease);
+    animation: rise .6s .25s var(--ease) both;
+  }
+  .big:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #c97556; }
+  .big:active { transform: translateY(2px); box-shadow: 0 2px 0 #c97556; }
+  .note { color: var(--pencil); font-size: 14px; margin: 14px 0 0; line-height: 1.5; }
+  code {
+    display: block; margin: 12px 0 0; padding: 12px 14px; border-radius: 10px; background: var(--paper);
+    border: 1px dashed var(--edge); font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace;
+    text-align: left; overflow-x: auto; white-space: nowrap; cursor: copy;
+  }
+  .steps { text-align: left; margin: 24px 0 0; padding: 16px 18px; border-radius: 12px; background: var(--paper); }
+  .steps h2 { font-size: 15px; margin: 0 0 8px; }
+  .steps ol { margin: 0; padding-left: 20px; color: var(--ink); font-size: 14px; line-height: 1.7; }
+  .others { margin-top: 26px; font-size: 14px; color: var(--pencil); }
+  .others a { color: var(--ink); font-weight: 700; margin: 0 6px; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+  @keyframes drop { from { opacity: 0; transform: translateY(-18px) rotate(-8deg) scale(.94); } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<main>
+  <img class="logo" src="https://raw.githubusercontent.com/ardazeybek/clipio/main/clipio/ui/assets/clipio.svg" alt="">
+  <h1>Clipio</h1>
+  <p class="lead">A cozy clipboard history. Everything you copy, kept on paper.</p>
+
+  <a class="big" id="main-link" href="https://github.com/ardazeybek/clipio/releases/latest">Download Clipio</a>
+  <div id="extra"></div>
+
+  <div class="steps">
+    <h2 id="steps-title">How to install</h2>
+    <ol id="steps"></ol>
+  </div>
+
+  <p class="others">Other systems:
+    <a href="#" data-os="windows">Windows</a>
+    <a href="#" data-os="mac">macOS</a>
+    <a href="#" data-os="linux">Linux</a>
+    <a href="https://github.com/ardazeybek/clipio">Source</a>
+  </p>
+</main>
+
+<script>
+// Offer the installer for the visitor's system; the links point at the newest release
+const BASE = "https://github.com/ardazeybek/clipio/releases/latest/download/";
+const LINUX_CMD = "curl -fsSL " + BASE + "install.sh | sh";
+const SYSTEMS = {
+  windows: {
+    label: "Download for Windows", file: "Clipio-Setup.exe",
+    steps: ["Open <b>Clipio-Setup.exe</b>.",
+            "If Windows says it protected your PC, click <b>More info → Run anyway</b>.",
+            "Press <b>Install</b>. Done! Open Clipio any time with <b>Ctrl + Shift + V</b>."]
+  },
+  mac: {
+    label: "Download for Mac", file: "Clipio-macOS-AppleSilicon.dmg",
+    extra: '<p class="note">Older Mac with an Intel chip? <a href="' + BASE + 'Clipio-macOS-Intel.dmg">Get the Intel version</a>.</p>',
+    steps: ["Open the downloaded disk image.",
+            "Right-click <b>Clipio</b> and choose <b>Open</b> (only the first time).",
+            "Press <b>Install</b>, then allow Clipio under <b>Privacy &amp; Security → Accessibility</b> so it can paste.",
+            "Open Clipio any time with <b>⌘ ⇧ V</b>."]
+  },
+  linux: {
+    label: "Download for Linux", file: "Clipio-Setup-Linux",
+    extra: '<p class="note">Easiest: paste this into a terminal (click to copy).</p><code id="cmd"></code>',
+    steps: ["Run the command above, <i>or</i> download the file and make it runnable (right-click → Properties → <b>Allow executing</b>).",
+            "Press <b>Install</b>. Clipio fetches any helper tools it needs.",
+            "Open Clipio with <b>Super + V</b>. On Wayland, bind <b>clipio toggle</b> to a key in your desktop settings."]
+  }
+};
+
+// Best guess of the visitor's system
+function detect() {
+  const p = (navigator.userAgentData?.platform || navigator.platform || navigator.userAgent).toLowerCase();
+  if (p.includes("win")) return "windows";
+  if (p.includes("mac") || /iphone|ipad/.test(p)) return "mac";
+  if (p.includes("linux") || p.includes("x11")) return "linux";
+  return "windows";
+}
+
+// Fill the page for one system
+function show(os) {
+  const s = SYSTEMS[os];
+  const link = document.getElementById("main-link");
+  link.textContent = s.label;
+  link.href = BASE + s.file;
+  document.getElementById("extra").innerHTML = s.extra || "";
+  document.getElementById("steps").innerHTML = s.steps.map(t => "<li>" + t + "</li>").join("");
+  const cmd = document.getElementById("cmd");
+  if (cmd) {
+    cmd.textContent = LINUX_CMD;
+    cmd.onclick = () => navigator.clipboard?.writeText(LINUX_CMD).then(() => { cmd.textContent = "Copied! Now paste it into a terminal."; setTimeout(() => cmd.textContent = LINUX_CMD, 1600); });
+  }
+}
+
+document.querySelectorAll("[data-os]").forEach(a => a.onclick = e => { e.preventDefault(); show(a.dataset.os); });
+show(detect());
+</script>
+</body>
+</html>

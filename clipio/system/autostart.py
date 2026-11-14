@@ -17,14 +17,26 @@ def python_exe() -> str:
     return str(exe)
 
 
-# Command line that runs Clipio in the background
-def command() -> list[str]:
-    return [python_exe(), "-m", "clipio", "run"]
+# True inside the packaged app (PyInstaller): the executable itself takes the commands
+def frozen() -> bool:
+    return bool(getattr(sys, "frozen", False))
+
+
+# Base command: the packaged executable, or the Python interpreter with `-m clipio`
+def base_command(exe: str | None = None) -> list[str]:
+    if exe:
+        return [exe]
+    return [sys.executable] if frozen() else [python_exe(), "-m", "clipio"]
+
+
+# Command line that runs Clipio in the background (`exe`: an installed packaged app)
+def command(exe: str | None = None) -> list[str]:
+    return [*base_command(exe), "run"]
 
 
 # Command line that starts the panel process (the service runs it when the panel opens)
 def panel_command() -> list[str]:
-    return [python_exe(), "-m", "clipio", "panel"]
+    return [*base_command(), "panel"]
 
 
 # Location of the macOS LaunchAgent file
@@ -39,9 +51,9 @@ def linux_desktop() -> Path:
 
 
 # macOS LaunchAgent contents
-def mac_plist_text() -> str:
+def mac_plist_text(exe: str | None = None) -> str:
     from xml.sax.saxutils import escape
-    args = "".join(f"\n        <string>{escape(a)}</string>" for a in command())
+    args = "".join(f"\n        <string>{escape(a)}</string>" for a in command(exe))
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -59,8 +71,8 @@ def mac_plist_text() -> str:
 
 
 # Linux autostart entry contents
-def linux_desktop_text() -> str:
-    exec_line = " ".join(f'"{a}"' if " " in a else a for a in command())
+def linux_desktop_text(exe: str | None = None) -> str:
+    exec_line = " ".join(f'"{a}"' if " " in a else a for a in command(exe))
     return f"""[Desktop Entry]
 Type=Application
 Name=Clipio
@@ -73,13 +85,13 @@ X-GNOME-Autostart-enabled=true
 
 
 # Turn starting at login on or off
-def set_enabled(on: bool) -> None:
+def set_enabled(on: bool, exe: str | None = None) -> None:
     if sys.platform == "win32":
         import winreg
         # CreateKeyEx also opens the key when it exists; fresh Windows installs may not have it
         with winreg.CreateKeyEx(winreg.HKEY_CURRENT_USER, RUN_KEY, 0, winreg.KEY_SET_VALUE) as key:
             if on:
-                value = " ".join(f'"{a}"' if " " in a else a for a in command())
+                value = " ".join(f'"{a}"' if " " in a else a for a in command(exe))
                 winreg.SetValueEx(key, "Clipio", 0, winreg.REG_SZ, value)
             else:
                 try:
@@ -90,7 +102,7 @@ def set_enabled(on: bool) -> None:
     f, text = (mac_plist(), mac_plist_text) if sys.platform == "darwin" else (linux_desktop(), linux_desktop_text)
     if on:
         f.parent.mkdir(parents=True, exist_ok=True)
-        f.write_text(text(), encoding="utf-8")
+        f.write_text(text(exe), encoding="utf-8")
     else:
         f.unlink(missing_ok=True)
 

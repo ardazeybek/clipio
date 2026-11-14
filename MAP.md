@@ -13,8 +13,10 @@ A paper-themed clipboard history for Windows, macOS and Linux, written in Python
   - `core/` — platform-independent logic: paths, settings, SQLite storage, classification, limits
   - `system/` — operating-system integration: clipboard backends, paste keystroke, global hotkey, autostart, Hyprland rule
   - `ui/` — QML window (`Main.qml`), `components/`, `icons/`, `assets/` (logo)
+- `clipio/setup/` — installer of the packaged app (`install.py` per-OS install/update/remove, `window.py` + `ui/Setup.qml` animated setup window)
+- `packaging/` — PyInstaller recipe, icon render, Linux `install.sh`; `.github/workflows/release.yml` builds the apps on `v*` tags
 - `tests/` — pytest suite; runs headless (`QT_QPA_PLATFORM=offscreen`); `test_e2e.py` runs real service and panel processes
-- `docs/` — `capture.py` renders the README pictures; `assets/` holds them (overview, demo GIF, settings)
+- `docs/` — `index.html` download page (GitHub Pages, picks the file for the visitor's OS), `capture.py` renders the README pictures; `assets/` holds them (overview, demo GIF, settings)
 - `.github/` — `workflows/ci.yml` (tests on Windows, macOS and Linux with Python 3.10–3.14), issue and pull request templates
 - `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md` — community files GitHub shows on the repo page
 
@@ -66,3 +68,9 @@ A paper-themed clipboard history for Windows, macOS and Linux, written in Python
 
 ## Design
 Paper theme: old-notebook paper background, note-paper cards with a paper-stack shadow, mustard tape accents. Peach `accent` for selection, sage `sage` tape for pinned items (`clipio/ui/components/Theme.qml`). The logo (`clipio/ui/assets/clipio.svg`) is two note sheets with a paper clip and tape on a transparent background. The window is frameless and transparent; the panel draws its own shadow. On Hyprland a runtime rule (re-added every time the panel opens, because `hyprctl reload` drops runtime rules) turns off the compositor border, blur, shadow and 0.57+ inner glow, which would otherwise outline the transparent window. Cards show only their content and time. Clearing and settings use in-panel paper dialogs (`Dialog.qml`).
+
+## Packaged app (no Python needed)
+- `pyinstaller packaging/clipio.spec`: Windows/Linux get one `Clipio-Setup` file, macOS `Clipio.app` in a disk image.
+- Started without arguments, the packaged exe shows the setup window unless it is the installed copy (`setup/install.running_installed`); the installed copy opens the panel.
+- Installed per user: Windows `%LOCALAPPDATA%\Programs\Clipio` (+ Start menu, Apps & features entry), macOS `/Applications` or `~/Applications`, Linux `~/.local/lib/clipio` (+ `.desktop`, icon, `~/.local/bin/clipio`). Autostart points at the installed exe (`autostart.command(exe)`).
+- Updating = running a newer setup: it stops Clipio, swaps the folder (`.new` → rename), restarts. History and settings are never touched.

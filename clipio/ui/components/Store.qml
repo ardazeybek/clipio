@@ -7,6 +7,7 @@ QtObject {
     id: store
 
     property var all: []            // every item (plain objects)
+    readonly property bool canClear: all.some(i => !i.pinned)   // something the trash button would delete
     property real now: Date.now() / 1000
     property bool paused: false
     property int retentionDays: 14

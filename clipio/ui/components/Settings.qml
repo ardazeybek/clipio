@@ -75,6 +75,7 @@ Item {
         IconButton {
             anchors { right: parent.right; rightMargin: 14; verticalCenter: heading.verticalCenter }
             icon: "x"; size: 34
+            tint: Theme.danger; hoverTint: Theme.danger; glow: Theme.danger
             onClicked: root.closed()
         }
 

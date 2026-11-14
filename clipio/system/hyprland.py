@@ -1,4 +1,5 @@
 """Hyprland niceties: a runtime window rule so the panel floats, centered, without borders, blur, shadow or inner glow."""
+import json
 import subprocess
 
 from . import is_hyprland
@@ -37,12 +38,34 @@ def apply_window_rule() -> bool:
     return any(ok)
 
 
-# Give the panel keyboard focus (Wayland ignores Qt's own activate request)
+# Give the panel keyboard focus (Wayland ignores Qt's own activate request) without moving the mouse
 def focus_panel() -> bool:
     if not is_hyprland():
         return False
+    warps = not _no_warps()
+    if warps:
+        _set_no_warps(True)     # focusing a window would otherwise warp the cursor to its center
     lua = f'hl.dispatch(hl.dsp.focus({{ window = "class:^({APP_CLASS})$" }}))'
-    return _hyprctl(["eval", lua]) or _hyprctl(["dispatch", "focuswindow", f"class:^({APP_CLASS})$"])
+    ok = _hyprctl(["eval", lua]) or _hyprctl(["dispatch", "focuswindow", f"class:^({APP_CLASS})$"])
+    if warps:
+        _set_no_warps(False)    # give the user's setting back
+    return ok
+
+
+# The user's cursor:no_warps value (True when Hyprland never moves the cursor)
+def _no_warps() -> bool:
+    try:
+        r = subprocess.run(["hyprctl", "-j", "getoption", "cursor:no_warps"], capture_output=True, text=True, timeout=2)
+        return bool(json.loads(r.stdout).get("bool", False))
+    except (OSError, ValueError, AttributeError, subprocess.TimeoutExpired):
+        return False
+
+
+# Turn cursor warping off or on for this session (Lua config first, then classic keyword)
+def _set_no_warps(on: bool) -> None:
+    v = "true" if on else "false"
+    if not _hyprctl(["eval", f"hl.config({{ cursor = {{ no_warps = {v} }} }})"]):
+        _hyprctl(["keyword", "cursor:no_warps", v])
 
 
 # Cursor position as (x, y), or None when hyprctl cannot tell

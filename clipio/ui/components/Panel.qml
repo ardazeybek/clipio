@@ -402,6 +402,9 @@ Item {
                 size: 34
                 hoverTint: Theme.danger
                 glow: Theme.danger
+                enabled: Store.canClear          // nothing to clear: no question, button rests dim
+                opacity: enabled ? 1 : 0.35
+                Behavior on opacity { NumberAnimation { duration: 140 } }
                 onClicked: root.dialog = "clear"
             }
             IconButton {

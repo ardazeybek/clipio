@@ -12,6 +12,7 @@ Files:
 - `panel.py` — the panel process: `PanelController` loads the QML window, changes the database and asks the service to copy and paste
 - `bridge.py` — `Backend`, the QML singleton the panel reads state from and sends actions to
 - `ipc.py` — local sockets: the service channel and the panel channel, waiting (`send`) and fire-and-forget (`post`); long names are shortened to fit macOS
+- `setup/` — installer of the packaged app: `install.py` (install, update, remove per OS) and `window.py` (the animated setup window, `clipio setup` / `clipio uninstall`, `--silent` for scripts and stores)
 - `core/` — platform-independent logic (see its README)
 - `system/` — operating-system integration (see its README)
 - `ui/` — QML window and components

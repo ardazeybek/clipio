@@ -8,6 +8,7 @@
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-E58F6F" alt="MIT license" /></a>
     <img src="https://img.shields.io/badge/python-3.10%E2%80%933.14-9CC3A6" alt="Python 3.10 to 3.14" />
   </p>
+  <p><a href="https://ardazeybek.github.io/clipio/"><strong>⬇ Download Clipio</strong></a></p>
   <p><a href="#quick-start">Quick start</a> · <a href="#usage">Usage</a> · <a href="CONTRIBUTING.md">Contribute</a> · <a href="https://github.com/ardazeybek/clipio/discussions">Discussions</a> · <a href="mailto:quantastudio.dev@gmail.com">Contact</a></p>
 </div>
 
@@ -87,25 +88,24 @@ The buttons next to the search field pause recording, clear the history (after a
 
 ## Quick start
 
-There is no packaged release yet. Clipio installs from this repository with pip. The commands are the same on every system.
+### Download (easiest)
 
-### Requirements
+Go to the **[download page](https://ardazeybek.github.io/clipio/)**. It picks the right file for your computer. Open the file and press **Install**: Clipio copies itself into place, adds a menu entry, starts with your computer and opens. No Python or admin rights needed. Running a newer setup file later updates Clipio and keeps your history.
 
-- Python 3.10 to 3.14 ([python.org](https://www.python.org/downloads/) on Windows and macOS)
-- [pipx](https://pipx.pypa.io/) is recommended; plain `pip` works too
-- Linux only: on Wayland, `wl-clipboard` is needed (`wl-copy`, `wl-paste`); on X11, `xdotool` is needed for automatic pasting
+| System | File | First run |
+| --- | --- | --- |
+| Windows 10/11 | `Clipio-Setup.exe` | If SmartScreen appears: *More info → Run anyway* |
+| macOS (Apple Silicon / Intel) | `Clipio-macOS-AppleSilicon.dmg` / `Clipio-macOS-Intel.dmg` | Right-click Clipio → *Open* (the app is not notarized) |
+| Linux | `Clipio-Setup-Linux` | Or run `curl -fsSL https://github.com/ardazeybek/clipio/releases/latest/download/install.sh \| sh` |
 
-PySide6 (Qt) and the other Python packages are installed automatically.
+To remove it: Windows *Settings → Apps*; macOS and Linux `clipio uninstall`. Your history and settings stay.
 
-### Install
+### Install with Python (for developers)
+
+Requirements: Python 3.10 to 3.14; on Linux, `wl-clipboard` on Wayland or `xdotool` on X11.
 
 ```bash
 pipx install git+https://github.com/ardazeybek/clipio.git
-```
-
-Then start it and let it start with your session:
-
-```bash
 clipio start
 clipio autostart on
 ```

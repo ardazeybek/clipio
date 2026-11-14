@@ -25,6 +25,8 @@ USAGE = """usage: clipio <command>
   list              print the stored items
   status            print a short status summary
   version           print the version
+  setup [--silent]  install or update the packaged app (opens the setup window)
+  uninstall [--silent]  remove the packaged app (history and settings stay)
 """
 
 UI_COMMANDS = {"toggle", "show", "hide", "next"}
@@ -141,9 +143,27 @@ def app_command(command: str) -> int:
     return 0 if ipc.send(command) == "ok" else 1
 
 
+# Install or remove the packaged app, with the setup window or silently
+def setup_command(cmd: str, args: list[str]) -> int:
+    from .setup import window
+    remove = cmd == "uninstall"
+    return window.run_silent(remove) if "--silent" in args else window.run_setup(remove)
+
+
+# Packaged app started without arguments (double click): set up, or open the panel
+def launch_packaged() -> int:
+    from .setup import install
+    if not install.running_installed():
+        return setup_command("setup", [])
+    return app_command("show")
+
+
 # Entry point of the `clipio` command
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else argv
+    argv = [a for a in argv if not a.startswith("-psn_")]   # old macOS adds a process serial number
+    if not argv and getattr(sys, "frozen", False):
+        return launch_packaged()
     if not argv or argv[0] in ("-h", "--help", "help"):
         print(USAGE)
         return 0
@@ -172,6 +192,8 @@ def main(argv: list[str] | None = None) -> int:
         return app_command(f"{cmd} {args[0]}")
     if cmd == "autostart":
         return autostart_command(args)
+    if cmd in ("setup", "uninstall"):
+        return setup_command(cmd, args)
     return db_command(cmd, args)
 
 
