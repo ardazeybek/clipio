@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="236" height="62" viewBox="0 -6 236 62">
+  <!-- "Download Clipio" button for the README, in the app's paper theme -->
+  <!-- pressed-paper edge under the button -->
+  <rect x="2" y="6" width="232" height="48" rx="14" fill="#C97556"/>
+  <rect x="2" y="2" width="232" height="48" rx="14" fill="#E58F6F"/>
+  <!-- mustard tape on the corner -->
+  <rect x="186" y="-4" width="40" height="14" rx="2" fill="#F3D9A4" opacity="0.95" transform="rotate(12 206 3)"/>
+  <!-- download icon: a note sheet with an arrow going into a tray -->
+  <g fill="none" stroke="#FFFCF5" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M34 15 v15"/>
+    <path d="M28 24.5 l6 6 l6 -6"/>
+    <path d="M24 31 v4.5 a2.5 2.5 0 0 0 2.5 2.5 h15 a2.5 2.5 0 0 0 2.5 -2.5 v-4.5"/>
+  </g>
+  <text x="56" y="32" fill="#FFFCF5" font-family="Nunito, 'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif"
+        font-size="17" font-weight="800" letter-spacing="0.2">Download Clipio</text>
+</svg>
