@@ -1,26 +1,17 @@
-# Contributing to Clipio
+<p align="center">
+  <img src="docs/assets/contrib-ways.png" width="880" alt="Contributing You do not need to write code to help. Each of these makes Clipio better for everyone. Report a bug. What you did, what you expected, what happened. Test your system. Windows, macOS and less common Linux desktops are extra welcome. Fix the docs. An unclear step in a README? A one-line fix helps. Design and access. Contrast, sizes, keyboard use and animations. With a bug report, tell us: your system and version, your Linux desktop (for example Hyprland, GNOME on Wayland, KDE on X11), and the output of the two commands below." />
+</p>
 
-Thanks for helping. You do not need to write code to contribute. These are all useful:
+```bash
+clipio version
+python --version
+```
 
-- **Bug reports** — what you did, what you expected and what happened.
-- **Testing** — try Clipio on your system, desktop and apps, and report what breaks. Windows, macOS and less common Linux desktops are especially welcome.
-- **Documentation** — fix unclear steps in the README or in a folder's `README.md`.
-- **Design and accessibility** — contrast, sizes, keyboard use and animations.
+<p align="center">
+  <img src="docs/assets/contrib-flow.png" width="880" alt="Workflow From idea to merged in six steps. 1. Look first. Search the open issues. Maybe someone is on it. 2. Talk first. A bigger change? Open an issue with your idea before you start. 3. Fork and branch. For example fix/paste-in-terminal. 4. Make the change. Small and focused beats big and mixed. 5. Run the checks. The tests, then the flow by hand: copy, open, search, paste, pin, delete. 6. Open a pull request. Say what changed and why. Add a screenshot for visual changes." />
+</p>
 
-Bugs and ideas go to [GitHub Issues](https://github.com/ardazeybek/clipio/issues). When reporting a bug, include your operating system and version, your desktop on Linux (for example Hyprland, GNOME on Wayland, KDE on X11), and the output of `clipio version` and `python --version`.
-
-## Workflow
-
-1. Look through the existing issues first.
-2. For a larger change, open an issue and describe your idea before you start.
-3. Fork the repository and create a branch, for example `fix/paste-in-terminal`.
-4. Make your change.
-5. Run the checks below.
-6. Open a pull request that explains what changed and why. Add a screenshot for visual changes.
-
-## Development setup
-
-You need Python 3.10 to 3.14. On Linux Wayland you also need `wl-clipboard`.
+## Run it from source
 
 ```bash
 git clone https://github.com/<your-username>/clipio.git
@@ -28,37 +19,23 @@ cd clipio
 python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -e ".[test]"
-clipio run
+clipio run                         # errors and QML warnings show here; Ctrl+C stops it
 ```
 
-`clipio run` keeps Clipio in the terminal, so errors and QML warnings are printed there. Stop it with <kbd>Ctrl</kbd> + <kbd>C</kbd> and start it again after a change. To keep your own history out of the way while developing, point Clipio at other folders:
+Keep your own history out of the way while you work:
 
 ```bash
 export CLIPIO_DATA_DIR=/tmp/clipio-dev/data CLIPIO_CONFIG_DIR=/tmp/clipio-dev/config CLIPIO_IPC_NAME=clipio-dev
 ```
 
-## Checks
+<p align="center">
+  <img src="docs/assets/contrib-checks.png" width="880" alt="Checks Green on three systems before it ships. No screen needed. Tests run headless and load the real QML panel. Zero QML warnings. Any warning fails the test. Keep the log clean. Every system. CI runs Windows, macOS and Linux, Python 3.10 to 3.14. Tests that need one system (Windows registry, macOS helpers) are skipped on the others. A pull request passes all of them." />
+</p>
 
 ```bash
 python -m pytest -v
 ```
 
-The tests run without a screen (`QT_QPA_PLATFORM=offscreen`, set by `tests/conftest.py`). They load the real QML panel and fail on any QML warning. Tests that need a specific system (the Windows registry, macOS helpers) are skipped elsewhere.
-
-GitHub Actions runs the same suite on Windows, macOS and Linux with Python 3.10 to 3.14, plus once with the oldest supported PySide6. A pull request should pass all of them.
-
-Before opening a pull request, also try the flow you changed by hand: copy something, open the panel, then search, paste, pin and delete.
-
-## Code style
-
-- Each folder has one job, and its `README.md` gives a one-line description of every file in it. Update that file when you add, remove or change one.
-- [`MAP.md`](MAP.md) is the architecture map. Update it when the main flow, a platform backend or an external location changes.
-- Each file starts with a one-line comment or docstring that says what it does.
-- Keep functions small and put a one-line comment above each one that says what it does.
-- Everything is written in English: code, comments, interface texts and documentation.
-- Code in `clipio/core/` must not depend on the operating system. Platform differences go in `clipio/system/`.
-- Colors, fonts and sizes come from [`clipio/ui/components/Theme.qml`](clipio/ui/components/Theme.qml), and interface texts from `Strings.qml`. Do not hard-code them in components.
-
-## License
-
-By contributing, you agree that your contributions are released under the [MIT License](LICENSE).
+<p align="center">
+  <img src="docs/assets/contrib-rules.png" width="880" alt="Code style Six rules that keep Clipio easy to read. One job per folder. Its README.md lists every file in one line. Update it with your change. Keep the map true. Update MAP.md when the main flow, a backend or a location changes. Say what it does. A one-line comment on top of every file and every small function. English everywhere. Code, comments, interface texts and docs. Core stays pure. clipio/core/ never touches the OS. That goes in clipio/system/. Theme in one place. Colors, fonts, sizes from Theme.qml , texts from Strings.qml. By contributing, you agree your work is released under the MIT License." />
+</p>

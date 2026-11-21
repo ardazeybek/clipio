@@ -1,0 +1,36 @@
+# docs/assets/src/
+Sources of the drawn pictures. Each `<name>.html` becomes `../<name>.png` (2x) with `./render.sh [name ...]`.
+
+- `base.css` — Clipio's paper theme (colors, fonts, panel, cards) shared by every page
+- `fit.js` — measures the panel and writes its height for render.sh
+- `icons.js` — the line icons used on the cards
+- `render.sh` — finds Chromium and renders pages to PNG
+- `conduct.html` — CODE_OF_CONDUCT: three promises and an email button
+- `config.html` — where the settings file lives and what each setting does
+- `contrib-checks.html` — CONTRIBUTING: what the tests check
+- `contrib-flow.html` — CONTRIBUTING: from idea to pull request in six steps
+- `contrib-rules.html` — CONTRIBUTING: code style rules
+- `contrib-ways.html` — CONTRIBUTING: ways to help and what a bug report needs
+- `contribute.html` — three ways to help, links to CONTRIBUTING.md
+- `dev.html` — the two processes and the folders, for developers
+- `faq.html` — short answers to common questions
+- `features-everyday.html` — Everyday features
+- `features-privacy.html` — Privacy features
+- `features-smart.html` — Smart cards features
+- `first-run.html` — what to click the first time, per system
+- `highlights.html` — six reasons to use Clipio
+- `how.html` — how Clipio works: copy, press the shortcut, it is pasted
+- `install.html` — install Clipio in three steps (links to the download page)
+- `license.html` — MIT license and a star request, links to LICENSE
+- `macos.html` — the two permissions macOS asks for
+- `os-linux.html` — Linux download card
+- `os-macos.html` — macOS download card
+- `os-windows.html` — Windows download card
+- `settings-tabs.html` — the four settings tabs next to a real screenshot
+- `shortcuts.html` — every key in the panel
+- `social.html` — 1280x640 social preview
+- `support-discussions.html` — support card: ideas and questions go to Discussions
+- `support-issues.html` — support card: bugs go to GitHub Issues
+- `support-mail.html` — support card: anything else by email
+- `updates.html` — how Clipio updates itself and how to remove it
+- `wayland.html` — how to open Clipio on Wayland and where pasting works

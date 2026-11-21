@@ -1,0 +1,19 @@
+<!doctype html>
+<!-- dev.html — source of docs/assets/dev.png: the two processes and the folders, for developers -->
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>.cols{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:32px}.sheet{padding:26px 28px}.sheet h2{font-size:24px}.mem{font-family:var(--mono);font-weight:700;color:var(--accent-dk);font-size:17px;margin-top:4px}.sheet p{font-size:18px;color:var(--ink-2);line-height:1.5;margin-top:10px}.fold{margin-top:24px;padding:8px 28px}.r{display:grid;grid-template-columns:230px 1fr;gap:16px;padding:12px 0;border-top:2px dashed var(--edge);font-size:18px;align-items:center}.r:first-child{border:0}.r span{color:var(--ink-2);font-weight:600}.r code{justify-self:start}</style></head>
+<body><div class="panel">
+<span class="tape">For developers</span><h1>Two small processes. Nothing hidden.</h1>
+<p class="lede">Python and Qt Quick (QML) through PySide6. Needs Python 3.10 to 3.14.</p>
+<div class="cols">
+<div class="sheet"><span class="strip sage"></span><h2>The recorder</h2><div class="mem">always on · ≈ 25 MB of its own</div><p>Clipboard, saving, pasting, hotkey, tray and updates.</p></div>
+<div class="sheet"><span class="strip peach"></span><h2>The panel</h2><div class="mem">only while you use it, plus 5 min</div><p>The window you see. It quits by itself and gives all its memory back.</p></div>
+</div>
+<div class="sheet fold">
+<div class="r"><code>clipio/core/</code><span>Sorts and stores items in SQLite. No OS code.</span></div>
+<div class="r"><code>clipio/system/</code><span>One small backend per system: clipboard, paste, hotkey, autostart, updates.</span></div>
+<div class="r"><code>clipio/setup/</code><span>The installer of the ready-made app.</span></div>
+<div class="r"><code>clipio/ui/</code><span>The panel and setup windows in QML.</span></div>
+<div class="r"><code>packaging/</code><span>Builds the installers on every release.</span></div>
+</div>
+<p class="foot">Tests run on Windows, macOS and Linux with Python 3.10 to 3.14 on every push. <b>MAP.md</b> maps the whole thing.</p>
+</div><script src="icons.js"></script><script src="fit.js"></script></body></html>

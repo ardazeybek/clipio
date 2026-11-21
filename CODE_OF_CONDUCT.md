@@ -1,9 +1,3 @@
-# Code of conduct
-
-Clipio is a friendly project. Everyone is welcome, whatever their experience, background or identity.
-
-- Be kind and patient, especially with newcomers.
-- Discuss ideas, not people. No insults, harassment or personal attacks.
-- Assume good intent and ask before you judge.
-
-Problems can be reported to **quantastudio.dev@gmail.com**. Comments, issues or pull requests that break these rules may be edited or removed, and repeat offenders may be blocked.
+<p align="center">
+  <a href="mailto:quantastudio.dev@gmail.com"><img src="docs/assets/conduct.png" width="880" alt="Code of conduct Everyone is welcome here. Whatever your experience, background or identity. Three promises keep it that way. Be kind and patient. Especially with newcomers. Every expert once asked the “obvious” question. Ideas, not people. Argue about the code all you like. No insults, harassment or personal attacks. Assume good intent. Ask before you judge. Most rough messages were just written in a hurry. Something went wrong? Tell the maintainer by email. Comments, issues or pull requests that break these promises may be edited or removed. Repeat offenders may be blocked. Email the maintainer →." /></a>
+</p>

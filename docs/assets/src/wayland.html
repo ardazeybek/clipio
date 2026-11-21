@@ -1,0 +1,15 @@
+<!doctype html>
+<!-- wayland.html — source of docs/assets/wayland.png: how to open Clipio on Wayland and where pasting works -->
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>.cols{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:32px}.sheet{padding:28px 30px}.sheet h2{font-size:25px}.ok{display:grid;gap:14px;margin-top:16px}.o{display:flex;gap:14px;align-items:center;font-size:19px;font-weight:700}.o i{font-style:normal;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:16px;font-weight:900;flex:none;background:var(--sage);color:var(--sheet)}.o i.half{background:var(--tape);color:var(--ink)}.o span{color:var(--pencil);font-weight:600}.sheet p{font-size:18px;color:var(--ink-2);line-height:1.5;margin-top:12px}</style></head>
+<body><div class="panel">
+<span class="tape peach">Linux Wayland</span><h1>Wayland? Pick your own key.</h1>
+<p class="lede">Wayland does not let apps grab global shortcuts. So you bind <code>clipio toggle</code> to a key once.</p>
+<div class="cols">
+<div class="sheet"><span class="strip"></span><h2>Bind a key</h2><p><b>Hyprland</b> and <b>Sway</b>: add one line to your config (below).</p><p><b>GNOME</b> and <b>KDE</b>: Settings → Keyboard → Custom shortcut, with the command <code>clipio toggle</code>.</p></div>
+<div class="sheet"><span class="strip sage"></span><h2>Pasting works on</h2><div class="ok">
+<div class="o"><i>✓</i>Hyprland <span>out of the box</span></div>
+<div class="o"><i>✓</i>Sway and wlroots <span>with wtype, the installer gets it</span></div>
+
+<div class="o"><i class="half">~</i>GNOME <span>Clipio copies, you press Ctrl + V</span></div></div></div>
+</div>
+</div><script src="icons.js"></script><script src="fit.js"></script></body></html>

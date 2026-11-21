@@ -1,0 +1,73 @@
+/* base.css — Clipio's paper theme for every README picture (values from clipio/ui/components/Theme.qml, see DESIGN.md) */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=block');
+
+/* Tokens */
+:root {
+  --paper: #F6EFE1;   /* panel: old notebook paper */
+  --sheet: #FFFCF5;   /* card: clean note paper */
+  --edge: #E4D8C2;    /* paper edge */
+  --stack: #E9DFCB;   /* paper stack under a card */
+  --dots: #C9BBA4;    /* pencil dots, key borders */
+  --ink: #3D3530;
+  --ink-2: #6B5F55;
+  --pencil: #9A8E7E;
+  --accent: #E58F6F;  /* peach */
+  --accent-dk: #C97556;
+  --accent-soft: #F8DDD1;
+  --tape: #F3D9A4;    /* mustard tape */
+  --sage: #9CC3A6;    /* pinned */
+  --sage-dk: #5E8C6A;
+  --sage-soft: #DCEBDF;
+  --sans: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* Canvas: 1280 px wide, transparent outside the paper panel (room for the stack shadow) */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: transparent; }
+body { width: 1280px; padding: 0 8px 8px 0; font-family: var(--sans); color: var(--ink); -webkit-font-smoothing: antialiased; }
+.panel { background: var(--paper); border: 2px solid var(--edge); border-radius: 26px; padding: 56px 60px 52px;
+  position: relative; box-shadow: 8px 8px 0 var(--stack); }
+
+/* Type */
+h1 { font-weight: 900; font-size: 46px; line-height: 1.1; letter-spacing: -0.01em; }
+h2 { font-weight: 800; font-size: 25px; line-height: 1.2; }
+.lede { font-size: 21px; line-height: 1.5; color: var(--ink-2); margin-top: 10px; font-weight: 600; max-width: 72ch; }
+p { font-weight: 600; }
+.mono, code { font-family: var(--mono); font-weight: 500; }
+code { font-size: .86em; background: var(--stack); border-radius: 6px; padding: 1px 7px; color: var(--ink); }
+b { font-weight: 800; color: var(--ink); }
+
+/* Tape label above a title */
+.tape { display: inline-block; background: var(--tape); opacity: .95; padding: 6px 18px; border-radius: 3px;
+  font-weight: 800; font-size: 15px; letter-spacing: .1em; text-transform: uppercase; transform: rotate(-2deg); margin-bottom: 16px; }
+.tape.sage { background: var(--sage); } .tape.peach { background: var(--accent); color: var(--sheet); }
+.strip { position: absolute; width: 70px; height: 22px; background: var(--tape); opacity: .92; border-radius: 3px; top: -10px; left: 50%; margin-left: -35px; transform: rotate(-3deg); }
+.strip.sage { background: var(--sage); } .strip.peach { background: var(--accent); }
+
+/* A note card lying on a paper stack */
+.sheet { background: var(--sheet); border: 2px solid var(--edge); border-radius: 18px; box-shadow: 6px 6px 0 var(--stack); position: relative; }
+
+/* Paper dot holding a drawn icon */
+.dot { flex: none; width: 66px; height: 66px; border-radius: 50%; background: var(--paper); display: grid; place-items: center; }
+.sheet .dot { background: var(--paper); } .panel > .dot { background: var(--sheet); }
+svg.ic { width: 44px; height: 44px; display: block; }
+
+/* Numbered peach badge and key caps */
+.num { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: var(--sheet); font-weight: 900; font-size: 21px; display: grid; place-items: center; flex: none; }
+kbd { display: inline-block; font-family: var(--sans); font-weight: 800; font-size: 16px; line-height: 1; padding: 6px 10px 7px; min-width: 32px; text-align: center;
+  background: var(--sheet); border: 2px solid var(--dots); border-bottom-width: 4px; border-radius: 8px; color: var(--ink); }
+kbd.on { background: var(--accent); border-color: var(--accent-dk); color: var(--sheet); }
+
+/* Call-to-action pill */
+.cta { display: inline-flex; gap: 10px; align-items: center; background: var(--accent); color: var(--sheet); font-weight: 800; font-size: 19px;
+  padding: 13px 24px; border-radius: 14px; box-shadow: 0 4px 0 var(--accent-dk); }
+
+/* Shared layouts: grids of note cards, each with an icon dot and two lines */
+.g2, .g3, .g4 { display: grid; gap: 24px; margin-top: 34px; }
+.g2 { grid-template-columns: repeat(2, 1fr); } .g3 { grid-template-columns: repeat(3, 1fr); } .g4 { grid-template-columns: repeat(4, 1fr); }
+.item { padding: 24px 26px; display: flex; gap: 20px; align-items: center; }
+.item h2 { font-size: 23px; }
+.item p { font-size: 18px; line-height: 1.45; color: var(--ink-2); margin-top: 4px; }
+.top { margin-top: 34px; }
+.foot { margin-top: 30px; font-size: 18px; color: var(--ink-2); font-weight: 600; }

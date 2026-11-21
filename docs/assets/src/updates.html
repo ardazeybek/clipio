@@ -1,0 +1,18 @@
+<!doctype html>
+<!-- updates.html — source of docs/assets/updates.png: how Clipio updates itself and how to remove it -->
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>.cols{display:grid;grid-template-columns:1.55fr 1fr;gap:24px;margin-top:34px}.sheet{padding:30px 32px}.flow{display:grid;gap:18px;margin-top:18px}.f{display:flex;gap:16px;align-items:center;font-size:19px;color:var(--ink-2);font-weight:600}.f .num{width:34px;height:34px;font-size:17px}.sheet h2{font-size:26px}.sm{font-size:17px;color:var(--pencil);margin-top:20px;line-height:1.5}.rm{display:grid;gap:16px;margin-top:18px}.rm div{font-size:18px;color:var(--ink-2);line-height:1.45}</style></head>
+<body><div class="panel">
+<span class="tape sage">Updates</span><h1>Always the newest. Zero effort.</h1>
+<div class="cols">
+<div class="sheet"><span class="strip sage"></span><h2>Updates itself</h2><div class="flow">
+<div class="f"><span class="num">1</span><span>Looks for a new version at start and once a day.</span></div>
+<div class="f"><span class="num">2</span><span>Downloads it and checks it against a checksum.</span></div>
+<div class="f"><span class="num">3</span><span>Installs while the panel is closed. History and settings stay.</span></div>
+<div class="f"><span class="num">4</span><span>A small note says <b>“Clipio was updated”</b>.</span></div></div>
+<p class="sm">Turn it off in <b>Settings → Features → Automatic updates</b>. Installed with Python? You just get a note.</p></div>
+<div class="sheet"><span class="strip peach"></span><h2>Leaves cleanly</h2><div class="rm">
+<div><b>Windows</b><br>Settings → Apps → Clipio → Uninstall</div>
+<div><b>macOS and Linux</b><br>Run <code>clipio uninstall</code></div></div>
+<p class="sm">Your history and settings are kept, in case you come back.</p></div>
+</div>
+</div><script src="icons.js"></script><script src="fit.js"></script></body></html>

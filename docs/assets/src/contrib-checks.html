@@ -1,0 +1,11 @@
+<!doctype html>
+<!-- contrib-checks.html — source of docs/assets/contrib-checks.png: CONTRIBUTING: what the tests check -->
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style></style></head>
+<body><div class="panel">
+<span class="tape sage">Checks</span><h1>Green on three systems before it ships.</h1>
+<div class="g3">
+<div class="sheet item"><div class="dot"><i data-ic="image"></i></div><div><h2>No screen needed</h2><p>Tests run headless and load the real QML panel.</p></div></div>
+<div class="sheet item"><div class="dot"><i data-ic="block"></i></div><div><h2>Zero QML warnings</h2><p>Any warning fails the test. Keep the log clean.</p></div></div>
+<div class="sheet item"><div class="dot"><i data-ic="devices"></i></div><div><h2>Every system</h2><p>CI runs Windows, macOS and Linux, Python 3.10 to 3.14.</p></div></div>
+</div><p class="foot">Tests that need one system (Windows registry, macOS helpers) are skipped on the others. A pull request passes all of them.</p>
+</div><script src="icons.js"></script><script src="fit.js"></script></body></html>

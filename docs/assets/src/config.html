@@ -1,0 +1,26 @@
+<!doctype html>
+<!-- config.html — source of docs/assets/config.png: where the settings file lives and what each setting does -->
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>.loc{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:30px}.loc .sheet{padding:22px 24px}.loc h2{font-size:21px;display:flex;gap:10px;align-items:center}.loc h2 svg.ic{width:34px;height:34px}.loc p{font-size:15px;color:var(--ink-2);margin-top:10px;line-height:1.7}.loc code{font-size:14px}.tbl{margin-top:24px;padding:10px 30px}.r{display:grid;grid-template-columns:300px 1fr 120px;gap:20px;align-items:center;padding:11px 0;border-top:2px dashed var(--edge);font-size:18px}.r:first-child{border:0}.r span{color:var(--ink-2);font-weight:600}.r b{text-align:right;font-family:var(--mono);font-size:16px;font-weight:700;color:var(--accent-dk)}.r code{justify-self:start}</style></head>
+<body><div class="panel">
+<span class="tape">Settings file</span><h1>Prefer a text file? Here it is.</h1>
+<p class="lede">Edit <code>config.toml</code>, then run <code>clipio stop</code> and <code>clipio start</code>.</p>
+<div class="loc">
+<div class="sheet"><h2><i data-ic="windows"></i>Windows</h2><p>Settings <code>%APPDATA%\clipio\config.toml</code><br>History <code>%LOCALAPPDATA%\clipio\</code></p></div>
+<div class="sheet"><h2><i data-ic="mac"></i>macOS</h2><p>Both in<br><code style="white-space:nowrap;font-size:12.5px">~/Library/Application Support/clipio/</code></p></div>
+<div class="sheet"><h2><i data-ic="penguin"></i>Linux</h2><p>Settings <code>~/.config/clipio/config.toml</code><br>History <code>~/.local/share/clipio/</code></p></div>
+</div>
+<div class="sheet tbl">
+<div class="r"><code>retention_days</code><span>Days before unpinned items are deleted</span><b>14</b></div>
+<div class="r"><code>max_items</code><span>Most items to keep</span><b>500</b></div>
+<div class="r"><code>max_text_kb · max_image_mb</code><span>Bigger texts and images are not saved</span><b>1024 · 25</b></div>
+<div class="r"><code>max_images_total_mb</code><span>Total space for images</span><b>1024</b></div>
+<div class="r"><code>persist</code><span>Put the last copy back if an app empties the clipboard</span><b>true</b></div>
+<div class="r"><code>hotkey</code><span>Global shortcut, like "ctrl+alt+v"</span><b>per system</b></div>
+<div class="r"><code>ignore_apps</code><span>Apps never recorded, like ["KeePassXC"]</span><b>[]</b></div>
+<div class="r"><code>clean_links</code><span>Remove tracking bits from links</span><b>true</b></div>
+<div class="r"><code>secret_minutes</code><span>Minutes before secrets are deleted</span><b>5</b></div>
+<div class="r"><code>link_titles</code><span>Fetch page titles (visits the site)</span><b>false</b></div>
+<div class="r"><code>auto_update</code><span>Install new versions by itself</span><b>true</b></div>
+<div class="r"><code>panel_keep_minutes</code><span>Minutes the closed panel stays ready (0 = free now)</span><b>5</b></div>
+</div>
+</div><script src="icons.js"></script><script src="fit.js"></script></body></html>
