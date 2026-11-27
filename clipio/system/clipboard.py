@@ -2,7 +2,6 @@
 import subprocess
 import sys
 import threading
-import time
 
 from PySide6.QtCore import QBuffer, QIODevice, QMimeData, QObject, QTimer, Signal
 from PySide6.QtGui import QImage
@@ -124,10 +123,12 @@ class WaylandClipboard(QObject):
                 self._proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, text=True)
             except OSError:
                 return
+            if self._stop.is_set():   # stop() ran while starting: do not leak the watcher
+                self._proc.terminate()
             for _ in self._proc.stdout:
                 self.changed.emit()
             self._proc.wait()
-            time.sleep(2)   # restart shortly if the watcher died
+            self._stop.wait(2)   # restart shortly if the watcher died
 
     # Read the current clipboard content
     def read(self) -> Snapshot:

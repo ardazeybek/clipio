@@ -5,6 +5,7 @@ Item {
     id: root
     property string title: ""
     property string sub: ""
+    property bool playing: visible   // sway only while seen (the hidden window keeps items "visible")
 
     // bounce the content up when it becomes visible
     onVisibleChanged: if (visible) enter.restart()
@@ -40,13 +41,13 @@ Item {
                 smooth: true
                 SequentialAnimation on lift {
                     loops: Animation.Infinite
-                    running: root.visible
+                    running: root.playing
                     NumberAnimation { to: 7; duration: 1600; easing.type: Easing.InOutSine }
                     NumberAnimation { to: 0; duration: 1600; easing.type: Easing.InOutSine }
                 }
                 SequentialAnimation on rotation {
                     loops: Animation.Infinite
-                    running: root.visible
+                    running: root.playing
                     NumberAnimation { to: 3; duration: 2100; easing.type: Easing.InOutSine }
                     NumberAnimation { to: -3; duration: 2100; easing.type: Easing.InOutSine }
                 }

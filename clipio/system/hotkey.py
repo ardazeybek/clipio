@@ -22,9 +22,14 @@ def parse(spec: str) -> tuple[frozenset, str]:
     if len(keys) != 1 or not mods:
         raise ValueError(f"invalid hotkey: {spec!r} (use something like ctrl+shift+v)")
     key = keys[0]
-    if not (len(key) == 1 and key.isalnum()) and not (key.startswith("f") and key[1:].isdigit()):
+    if not (len(key) == 1 and key.isalnum()) and not _function_key(key):
         raise ValueError(f"unsupported key in hotkey: {key!r}")
     return mods, key
+
+
+# True for F1…F24, the function keys Windows and X11 know
+def _function_key(key: str) -> bool:
+    return key.startswith("f") and key[1:].isdigit() and 1 <= int(key[1:]) <= 24
 
 
 # Turn a parsed hotkey into pynput's format, e.g. "<cmd>+<shift>+v"

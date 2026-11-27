@@ -234,7 +234,7 @@ def _linux_entries(exe: str) -> None:
                        f"Comment=A paper-themed clipboard history\nExec=\"{exe}\"\nIcon=clipio\n"
                        "Terminal=false\nCategories=Utility;\nKeywords=clipboard;paste;history;\n"
                        "StartupWMClass=clipio\n", encoding="utf-8")
-    if link.is_symlink() or not link.exists():   # never replace a user's own `clipio` script
+    if _own_link(link) or not link.exists():   # never replace a user's own `clipio` (script or pipx link)
         link.unlink(missing_ok=True)
         link.symlink_to(exe)
 
@@ -244,5 +244,18 @@ def _linux_remove_entries() -> None:
     desktop, icon, link = _linux_paths()
     desktop.unlink(missing_ok=True)
     icon.unlink(missing_ok=True)
-    if link.is_symlink():
+    if _own_link(link):
         link.unlink()
+
+
+# True when the command link is ours: points into the install folder, or is dangling
+def _own_link(link: Path) -> bool:
+    if not link.is_symlink():
+        return False
+    if not link.exists():
+        return True
+    try:
+        link.resolve().relative_to(target_dir().resolve())
+        return True
+    except ValueError:
+        return False

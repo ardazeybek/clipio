@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS items (
     used       REAL NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_used ON items(used);
+CREATE INDEX IF NOT EXISTS idx_order ON items(pinned, used);
+CREATE INDEX IF NOT EXISTS idx_image ON items(image_file);
 """
 
 # Columns added after the first release: name -> definition (added to old databases on connect)

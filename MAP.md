@@ -19,6 +19,7 @@ A paper-themed clipboard history for Windows, macOS and Linux, written in Python
 - `docs/` — `index.html` download page (GitHub Pages, picks the file for the visitor's OS), `capture.py` renders the README pictures; `assets/` holds them (overview, demo GIF, settings)
 - `.github/` — `workflows/ci.yml` (tests on Windows, macOS and Linux with Python 3.10–3.14), issue and pull request templates
 - `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md` — community files GitHub shows on the repo page
+- `DESIGN.md` — colors, fonts and shapes shared by the app and README pictures
 
 ## Two processes (memory)
 - **Service** (`clipio run`): always on, ~25 MB of its own memory (the rest is shared Python/Qt libraries). Clipboard, saving, paste keystroke, hotkey, tray, `clipio` commands, paste queue. Never imports QtQml/QtQuick. Gives freed memory back after big items and hourly (`system/memory.py`).

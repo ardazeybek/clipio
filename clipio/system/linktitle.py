@@ -25,7 +25,11 @@ def fetch(url: str) -> str:
     m = _TITLE.search(body)
     if not m:
         return ""
-    title = html.unescape(m.group(1).decode(charset, "replace"))
+    try:
+        raw = m.group(1).decode(charset, "replace")
+    except LookupError:   # unknown charset name from the server
+        raw = m.group(1).decode("utf-8", "replace")
+    title = html.unescape(raw)
     return " ".join(title.split())[:200]
 
 

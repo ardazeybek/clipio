@@ -1,12 +1,12 @@
 """Cleans copied text: removes tracking parameters from links and tidies whitespace."""
 import re
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+from urllib.parse import unquote_plus, urlsplit, urlunsplit
 
 # Query parameters that only track clicks (exact names)
 TRACKING = {
     "fbclid", "gclid", "gclsrc", "dclid", "msclkid", "yclid", "igshid", "mc_cid", "mc_eid",
     "_ga", "_gl", "ref_src", "ref_url", "spm", "si", "mkt_tok", "oly_anon_id", "oly_enc_id",
-    "vero_id", "wickedid", "twclid", "ttclid", "li_fat_id", "s_cid", "trk", "trkCampaign",
+    "vero_id", "wickedid", "twclid", "ttclid", "li_fat_id", "s_cid", "trk", "trkcampaign",
 }
 # Query parameter prefixes that only track clicks
 TRACKING_PREFIXES = ("utm_", "pk_", "hsa_", "__hs", "mtm_")
@@ -28,11 +28,12 @@ def clean_url(url: str) -> str:
         return url
     if not parts.query:
         return url
-    params = parse_qsl(parts.query, keep_blank_values=True)
-    kept = [(k, v) for k, v in params if not _is_tracker(k)]
+    # filter the raw pieces so kept parameters stay exactly as written
+    params = parts.query.split("&")
+    kept = [p for p in params if not _is_tracker(unquote_plus(p.split("=", 1)[0]))]
     if len(kept) == len(params):
         return url
-    return urlunsplit(parts._replace(query=urlencode(kept, doseq=True)))
+    return urlunsplit(parts._replace(query="&".join(kept)))
 
 
 # Clean every link inside a text

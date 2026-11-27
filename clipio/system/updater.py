@@ -161,9 +161,13 @@ def prepare(installer: Path) -> list[str] | None:
         if r.returncode != 0:
             return None
         try:
-            subprocess.run(["ditto", str(mount / "Clipio.app"), str(app)], capture_output=True, timeout=300)
+            copied = subprocess.run(["ditto", str(mount / "Clipio.app"), str(app)], capture_output=True, timeout=300)
         finally:
             subprocess.run(["hdiutil", "detach", str(mount), "-quiet"], capture_output=True, timeout=60)
+        # A half-copied app must not be run; remove it so the next try starts clean
+        if copied.returncode != 0:
+            shutil.rmtree(app, ignore_errors=True)
+            return None
     exe = app / "Contents" / "MacOS" / "Clipio"
     return [str(exe), "setup", "--silent"] if exe.exists() else None
 

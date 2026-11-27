@@ -108,11 +108,18 @@ class _Connection(QObject):
             return
         self._answered = True
         line = self._buf.split(b"\n", 1)[0].decode("utf-8", errors="replace").strip()
-        reply = str(self._handler(line))
+        reply = self._run(line)
         if self._sock.state() == QLocalSocket.LocalSocketState.ConnectedState:   # a fire-and-forget sender may be gone
             self._sock.write((reply + "\n").encode("utf-8"))
             self._sock.flush()
             self._sock.disconnectFromServer()
+
+    # Run the handler; a failing command still gets an answer so the sender does not wait for a timeout
+    def _run(self, line: str) -> str:
+        try:
+            return str(self._handler(line))
+        except Exception as exc:   # noqa: BLE001 - the server must keep serving
+            return f"error {type(exc).__name__}"
 
     # Answer a line that came with the hang-up (fire-and-forget senders), then free the socket
     def _done(self) -> None:

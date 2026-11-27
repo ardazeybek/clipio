@@ -28,7 +28,6 @@ def config_dir() -> Path:
     return Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config") / APP
 
 
-# Database file
 # Lock that keeps a second Clipio from starting
 def lock_file() -> Path:
     return data_dir() / "clipio.lock"

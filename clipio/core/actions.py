@@ -79,7 +79,8 @@ def save_text(con, text: str, source: str = "Clipio") -> int | None:
     hint, meta = classify.classify(text)
     raw = text.encode()
     return db.upsert(con, kind="text", hash=hashlib.sha256(raw).hexdigest(), text=text, hint=hint,
-                     meta=meta, size=len(raw), source=source, secret=int(sensitive.is_sensitive(text)))
+                     meta=meta, size=len(raw), source=source,
+                     secret=int(config.load()["detect_secrets"] and sensitive.is_sensitive(text)))
 
 
 # Convert an item's text and save the result as a new item; return its id

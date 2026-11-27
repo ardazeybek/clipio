@@ -554,6 +554,7 @@ Item {
         anchors.fill: list
         opacity: Store.count === 0 ? 1 : 0
         visible: opacity > 0
+        playing: visible && root.shown
         Behavior on opacity { NumberAnimation { duration: 240 } }
         title: Store.total === 0 && Store.query === "" ? Strings.t("empty") : Strings.t("noMatch")
         sub: Store.total === 0 && Store.query === "" ? Strings.t("emptySub") : ""
